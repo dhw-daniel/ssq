@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="created" content="00:00:00">
+<title>单项委托服务合同</title>
+<script src="__JS__/jquery-1.7.2.min.js"></script>
+<style>
+    input{border-top: none;border-left:none;border-right:none;border-bottom: 1px solid #000;color: #000;outline: none}
+	u{text-decoration:none}
+</style>
+</head>
+<body>
+<form id="childform">
+<h1 align="center">单项委托服务合同</h1>
+<div style="font-size:14px; line-height:28px; text-indent:37px;">
+<input type="hidden" readonly name="cnumber" value="{$cnumber}"/>
+  <p align="right">合同编号：<u><input type="text" readonly name="loops2" value="{$cnumber}"/></u></p>
+  <p align="left">甲方（委托人/
+  <input type="checkbox" class="mycheck1" checked="true" value="0">个人 
+  <input type="checkbox" class="mycheck1" value="1">团体签约人代表
+  <input type="hidden" name="loops158" value="<input type='checkbox' checked='true' class='mycheck1' \/>个人<input type='checkbox' class='mycheck1' \/>团体签约人代表"> ）：<u><input type="text" style="border-color:red" name="loops1"></u>邮箱：<u><input style="border-color:red" type="text" name="loops3"></u></p>
+  <p> 身份证号：<u><input style="border-color:red" type="text" name="loops4"></u>手机：<u><input style="border-color:red" type="text" name="loops5"><span id="posm"></span></u></p>
+  <p> 住所或单位地址：<u><input type="text" name="loops6"></u></p>
+  <p> 乙方（被委托人/服务旅行社）：港中旅国际成都旅行社有限公司</p>
+  <p> 经营许可证编号：L-SC-CJ00007</p>
+  <p> 经营范围：国内旅游、出境旅游、入境旅游</p>
+  <p> 单位地址：成都市锦江区静渝路48号索尔龙舟30楼&nbsp;电话：028-65178180、65178101</p>
+  <p> 为保证单项委托服务质量，明确双方的权利、义务，本着平等协商的原则，依据《合同法》、《旅游法》，双方经平等协商，就甲方委托乙方提供单项服务的有关事项，签订合同如下：</p>
+  <p><strong>第一条：单项服务内容与标准</strong></p>
+  <p></p>
+  <table border="1" cellspacing="0" cellpadding="7px" style="text-indent:0px; margin-left:37px; line-height:21px;">
+    <tbody><tr>
+      <td width="15%" valign="top"><p align="center">项目</p></td>
+      <td width="85%" colspan="7" valign="top">
+          <p align="left">
+              <!--最多可勾选两项，其他未选中且显示-->
+              <span id="morechose">
+                <input type='checkbox' class='mycheck2 morechose' value='0'/>代订票
+                <input type='checkbox' class='mycheck2 morechose' value='1'/>代订房
+                <input type='checkbox' class='mycheck2 morechose' value='2'/>代办签证
+                <input type='checkbox' class='mycheck2 morechose' value='3'/>代订车
+                <input type='checkbox' class='mycheck2 morechose' value='4'/>导游服务
+                <input type='checkbox' class='mycheck2 morechose' value='5'/>其他
+              </span>
+              <script>
+                  $(document).on('click','.mycheck2',function(){
+						var len = $('.mycheck2:checked').length;
+						if(len>2)
+						{
+						  alert('最多选择2项');
+						  $(this).removeAttr('checked');
+						  return;
+						}
+						if($(this).attr('isc'))
+                        {
+						   $(this).removeAttr('isc');
+                        }else{
+                           $(this).attr('isc','iscs');
+                        }
+                  })
+              </script>
+              <input type="hidden" name="loops7">
+          </p>
+        </td>
+    </tr>
+    <tr>
+      <td width="15%" rowspan="11"><p align="center">代<br><br>订<br><br>票</p></td>
+      <td width="25%" colspan="2"><p align="center">1、机票始发地-目的地</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops8"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops9"></p></td>
+      <td width="20%" valign="top" colspan="1"><p align="left"><input type="text" name="loops10"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">时间</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops11"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops12"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops13"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">航班号（不能确定可不填）</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops14"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops15"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops16"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">舱位等级</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops17"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops18"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops19"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">张数</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops20"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops21"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops22"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">2、其他交通费（火车等）</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops23"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops24"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops25"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">时间</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops26"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops27"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops28"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">舱位等级</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops29"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops30"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops31"></p></td>
+    </tr>
+    <tr>
+      <td width="25%" colspan="2"><p align="center">张数</p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops32"></p></td>
+      <td width="20%" valign="top" colspan="2"><p align="left"><input type="text" name="loops33"></p></td>
+      <td width="20%" valign="top"><p align="left"><input type="text" name="loops34"></p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7"><p align="left">费用总计：<input type="text" name="loops35">&nbsp;&nbsp;&nbsp;&nbsp;付款日期：<input type="text" name="loops36">年<input type="text" name="loops37">月<input type="text" name="loops38">日</p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p align="left">说明事项：</p>
+        <p> 1、交通工具的标准按如下填写：飞机：头等舱/商务舱/经济舱；火车：普通车/空调车/动车组；（其中：软卧/硬卧/软卧/硬座）；轮船：普通客船/星级游船几等舱；汽车：空调大巴/空调卧铺/普通客车。</p>
+        <p> 2、机票含机场建设费。</p>
+        <p> 3、机票的签、转、退等事宜按照所订航空公司的规定执行。</p></td>
+    </tr>
+    <tr>
+      <td width="15%" rowspan="9"><p align="center">代<br><br>订<br><br>房</p></td>
+      <td width="12%"><p align="center">入住时间</p></td>
+      <td width="12%"><p align="right"><input type="text" name="loops39">月<input type="text" name="loops40">日</p></td>
+      <td width="12%" colspan="1"><p align="right"><input type="text" name="loops41">月<input type="text" name="loops42">日</p></td>
+      <td width="12%" colspan="1"><p align="right"><input type="text" name="loops43">月<input type="text" name="loops44">日</p></td>
+      <td width="12%"><p align="right"><input type="text" name="loops45">月<input type="text" name="loops46">日</p></td>
+      <td width="12%" colspan="1"><p align="right"><input type="text" name="loops47">月<input type="text" name="loops48">日</p></td>
+      <td width="13%"><p align="right"><input type="text" name="loops49">月<input type="text" name="loops50">日</p></td>
+    </tr>
+    <tr>
+      <td width="12%"><p align="center">地点</p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops51"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops52"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops53"></p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops54"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops55"></p></td>
+      <td width="13%"><p align="center"><input type="text" name="loops56"></p></td>
+    </tr>
+    <tr>
+      <td width="12%"><p align="center">酒店名称</p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops57"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops58"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops59"></p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops60"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops61"></p></td>
+      <td width="13%"><p align="center"><input type="text" name="loops62"></p></td>
+    </tr>
+    <tr>
+      <td width="12%"><p align="center">酒店标准</p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops63"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops64"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops65"></p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops66"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops67"></p></td>
+      <td width="13%"><p align="center"><input type="text" name="loops68"></p></td>
+    </tr>
+    <tr>
+      <td width="12%"><p align="center">房间标准</p></td>
+
+      <td width="12%"><p align="center"><input type="text" name="loops69"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops70"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops71"></p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops72"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops73"></p></td>
+      <td width="13%"><p align="center"><input type="text" name="loops74"></p></td>
+    </tr>
+    <tr>
+      <td width="12%"><p align="center">间数</p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops75"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops76"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops77"></p></td>
+      <td width="12%"><p align="center"><input type="text" name="loops78"></p></td>
+      <td width="12%" colspan="1"><p align="center"><input type="text" name="loops79"></p></td>
+      <td width="13%"><p align="center"><input type="text" name="loops80"></p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7"><p align="center">共住：<input type="text" name="loops81">晚，费用总计：<input type="text" name="loops82">元，入住方式：报<input type="text" name="loops83">入住。</p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7"><p align="center">是否包含早餐：
+          <input type="checkbox" value="0" class="mycheck3">含
+          <input type="checkbox" value="1" class="mycheck3">不含
+          <input type="hidden" name="loops84">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;付款方式：<input type="text" name="loops85">&nbsp;<input type="text" name="loops86">年<input type="text" name="loops87">月<input type="text" name="loops88">日</p></td>
+          <script>
+              $(document).on('click','.mycheck3',function(){
+                if($(this).val()==0)
+                {
+                  var str = "<input type='checkbox' checked='true' class='mycheck3' \/>含 <input type='checkbox' class='mycheck3' \/>不含";
+                }else{
+                  var str = "<input type='checkbox' class='mycheck3' \/>含<input type='checkbox' checked='true' class='mycheck3' \/>不含";
+                } 
+                $('input[name="loops84"]').attr('value',str);
+                $(this).siblings('.mycheck3').attr('checked',false);
+              });
+            </script>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p align="left">说明事项：</p>
+        <p>1、“酒店标准”不得写“准X星”或“相当于X星”。“房间标准”指几人间，如：商务房、大床房、双人房、三人房（是否带空调、卫生间）。</p>
+        <p>2、有些酒店尚未进行星级评定，可不填写酒店标准。</p>
+        <p>3、入住酒店、离店、因故提前退房、延住、酒店其它消费等事宜按照酒店规定执行。</p></td>
+    </tr>
+    <tr>
+      <td width="15%" rowspan="5"><p align="center">代</p>
+        <p align="center"> 订</p>
+        <p align="center"> 汽</p>
+        <p align="center"> 车</p></td>
+      <td width="85%" colspan="7"><p>车型：&nbsp;<input type="text" name="loops89">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 总座位数：&nbsp;<input type="text" name="loops90"></p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7"><p>行车路线：&nbsp;<input type="text" name="loops91"></p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7"><p>用车时间：<input type="text" name="loops92">月<input type="text" name="loops93">日&nbsp;—&nbsp;<input type="text" name="loops94">月<input type="text" name="loops95">日，共<input type="text" name="loops96">天。</p></td>
+    </tr>
+    <tr>
+        <td width="85%" colspan="7">
+          <p>接送方式：
+            <input type="checkbox" value="0" class="mycheck4">专车单独接送
+            <input type="checkbox" value="1" class="mycheck4">与其他客人同车接送
+            <input type="hidden" name="loops97">  
+            <script>
+              $(document).on('click','.mycheck4',function(){
+                if($(this).val()==0)
+                {
+                  var str = "<input type='checkbox' checked='true' class='mycheck3' \/>专车单独接送 <input type='checkbox' class='mycheck3' \/>与其他客人同车接送";
+                }else{
+                  var str = "<input type='checkbox' class='mycheck3' \/>专车单独接送<input type='checkbox' checked='true' class='mycheck3' \/>与其他客人同车接送";
+                } 
+                $('input[name="loops97"]').attr('value',str);
+                $(this).siblings('.mycheck4').attr('checked',false);
+              });
+            </script>
+            <input type="hidden" name="loops98">
+          </p>
+        </td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7"><p>费用总计：<input type="text" name="loops99">付款日期：<input type="text" name="loops100">年<input type="text" name="loops101">月<input type="text" name="loops102">日</p></td>
+    </tr>
+    <tr>
+      <td width="15%" rowspan="5"><p align="center">代办<br><br>签证、<br><br>签注</p></td>
+      <td width="85%" colspan="7" valign="top"><p>证照名称：<input type="text" name="loops103">&nbsp;&nbsp;签证国家（签注地区）：<input type="text" name="loops104"></p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top">
+          <p>签证类型：
+              <!--单选-->
+              <input type="checkbox" value="0" class="mycheck5">商务
+              <input type="checkbox" value="1" class="mycheck5">旅游
+              <input type="checkbox" value="2" class="mycheck5">探亲
+              <input type="checkbox" value="3" class="mycheck5">签注
+              <input type="checkbox" value="4" class="mycheck5">其他
+              <input type="hidden" name="loops105">
+              <script>
+                $(document).on('click','.mycheck5',function(){
+                  switch($(this).val())
+                  {
+                    case 0:
+                      var str = "<input type='checkbox' checked='true' class='mycheck5' \/>商务<input type='checkbox' class='mycheck5' \/>旅游<input type='checkbox' class='mycheck5' \/>探亲<input type='checkbox' class='mycheck5' \/>签注<input type='checkbox' class='mycheck5' \/>其他";
+                    break;
+                    case 1:
+                     var str = "<input type='checkbox' class='mycheck5' \/>商务<input type='checkbox' checked='true' class='mycheck5' \/>旅游<input type='checkbox' class='mycheck5' \/>探亲<input type='checkbox' class='mycheck5' \/>签注<input type='checkbox' class='mycheck5' \/>其他";
+                    break;
+                    case 2:
+                    var str = "<input type='checkbox' class='mycheck5' \/>商务<input type='checkbox' class='mycheck5' \/>旅游<input type='checkbox' checked='true' class='mycheck5' \/>探亲<input type='checkbox' class='mycheck5' \/>签注<input type='checkbox' class='mycheck5' \/>其他";
+                    break;
+                    case 3:
+                    var str = "<input type='checkbox' class='mycheck5' \/>商务<input type='checkbox' class='mycheck5' \/>旅游<input type='checkbox' class='mycheck5' \/>探亲<input type='checkbox' checked='true' class='mycheck5' \/>签注<input type='checkbox' class='mycheck5' \/>其他";
+                    break;
+                    case 4:
+                    var str = "<input type='checkbox' class='mycheck5' \/>商务<input type='checkbox' class='mycheck5' \/>旅游<input type='checkbox' class='mycheck5' \/>探亲<input type='checkbox' class='mycheck5' \/>签注<input type='checkbox' checked='true' class='mycheck5' \/>其他";
+                    break;
+                  }
+                  $('input[name="loops105"]').attr('value',str);
+                  $(this).siblings('.mycheck5').attr('checked',false);
+                });
+              </script>
+
+          </p>
+        </td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p>费用（只含签证费和服务费）：共签<u><input type="text" name="loops106"></u>个，共计金额：<u><input type="text" name="loops107"></u>元</p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p>委托人声明：本人自愿交纳履约保证金，若本人出行后由于任何原因不能在签证有效期内按期返回中国境内，本人同意保证金作为违约赔偿金不予退还。并承担由此引起的政治和经济责任，如按期返回，在完成销签手续后，再领回保证金。&nbsp;&nbsp;委托人：<u><input type="text" name="loops108"></u><input type="text" name="loops109">年<input type="text" name="loops110">月<input type="text" name="loops111">日</p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p align="left">说明事项：</p><p>1、代办签证/签注工作日为<u><input type="text" name="loops112"></u>天（使领馆原因除外），是否发放签证是使领馆的权利，乙方不承担任何责任。</p><p>2、甲方需提供真实资料（见签证须知）。</p><p>3、如遇使领馆通知委托人面谈，甲方应积极配合，并承担所有费用。</p><p>4、乙方保证代办的签证/签注真实有效，但不保证甲方能够进入签证国或地区。</p></td>
+    </tr>
+    <tr>
+      <td width="15%"><p align="center">导游</p>
+        <p align="center">服务</p></td>
+      <td width="85%" colspan="7"><p align="left">语种：<u><input type="text" name="loops113"></u>服务要求：<u><input type="text" name="loops114"></u>时间：<input type="text" name="loops115">年<input type="text" name="loops116">月<input type="text" name="loops117">日—<input type="text" name="loops118">年<input type="text" name="loops119">月<input type="text" name="loops120">日，共<input type="text" name="loops121">天。</p>
+      <p>费用：每天<u><input type="text" name="loops122"></u>元，共计<u><input type="text" name="loops123"></u>元付款日期：<input type="text" name="loops124">年<input type="text" name="loops125">月<input type="text" name="loops126">日</p></td>
+    </tr>
+    <tr>
+      <td width="15%" rowspan="3"><p align="center">其</p>
+        <p align="center"> 它</p></td>
+      <td width="85%" colspan="7" valign="top"><p align="left">内容：<input type="text" name="loops127"></p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p align="left">费用：<input type="text" name="loops128"></p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p align="left">说明事项：<input type="text" name="loops129"></p></td>
+    </tr>
+    <tr>
+      <td width="15%" rowspan="2"><p align="center">费用</p>
+        <p align="center"> 支付</p>
+        <p align="center"> 方式</p></td>
+      <td width="85%" colspan="7"><p align="left">费用总额人民币：<u><input type="text" name="loops130"></u>万<u><input type="text" name="loops131"></u>仟<u><input type="text" name="loops132"></u>佰<u><input type="text" name="loops133"></u>拾<u><input type="text" name="loops134"></u>元整（ ¥<u><input type="text" name="loops135"></u>）</p></td>
+    </tr>
+    <tr>
+      <td width="85%" colspan="7" valign="top"><p align="left">费用支付时间与方式：<u><input type="text" name="loops136"></u>年<u><input type="text" name="loops137"></u>月<u><input type="text" name="loops138"></u>日支付<u><input type="text" name="loops139"></u>元定金，<u><input type="text" name="loops140"></u>年<u><input type="text" name="loops141"></u>月<u><input type="text" name="loops142"></u>日付清全款（定金不超过合同全款的20%）</p></td>
+    </tr>
+  </tbody></table>
+  <p align="left">说明：服务内容除填空外，在□中打勾为同意，不够填写可加页。</p>
+  <p> <strong>第二条：费用说明</strong></p>
+  <p> 上述费用不含在接受单项服务中应由甲方支付的个人费用（包含但不限于：交通工具中的个人餐饮费、超重行李费、酒店住宿期的洗衣费、通信费、饮料及酒水费、行李保管费、寻回个人遗失物品的费用与报酬、自由活动与参观浏览中的费用以及旅程中伤病医疗费、因个人行为造成的赔偿费用、游客人身意外保险费等）</p>
+  <p> <strong>第三条：乙方责任</strong></p>
+  <p> 1、乙方应当按照合同第一条的约定履行服务义务。</p>
+  <p> 2、乙方对甲方提交的各项证照原件应妥善保管，如有遗失或损毁由乙方承担补办的责任和费用。</p>
+  <p> 3、乙方应告知甲方合同所列单项服务的具体接洽方法和联系方式。</p>
+  <p> 4、乙方向甲方提供的单项服务均为甲方委托的代办服务，乙方并不提供运输、住宿、用餐、游览、出入境等服务。甲方在接受代办服务后与上列服务的经营者（包括但不限于：运输、住宿、餐饮、游览、出入境等）就服务质量等产生争议、甲方在上列服务的经营场所内（包括但不限于：交通工具、住宿、餐饮场所、旅游景区等）受到人身伤害或财产损失，乙方的责任仅限于协助甲方向上列相应的服务经营者或损害的责任者索赔，乙方不承担任何赔偿责任。</p>
+  <p> <strong>第四条：甲方责任</strong></p>
+  <p> 1、甲方应当按照本合同第一条约定的时间和金额履行支付费用的义务，否则应承担违约责任，造成损失应予以赔偿。</p>
+  <p> 2、甲方提供的同行人员姓名、证件、联系方式及相关资料必须真实、准确、有效，否则甲方应承担相应的责任和已经实际发生的费用，并承担提供服务者因此而依约依法提出的索赔损失。</p>
+  <p> 3、甲方如提出变更或解除本合同，应承担已实际发生的费用和乙方已经支付给相应的服务经营者而无法退回的费用。</p>
+  <p> 4、甲方在接受相关服务事项时，应尊重当地民风民俗并注意安全。</p>
+  <p> <strong>第五条：违约责任</strong></p>
+  <p> 1、乙方因第三方（提供服务方或其他人）及不可抗力因素而未按约定标准履行合同的，在乙方能出具第三方盖章确认的书面说明后，乙方不承担赔偿责任，但应协助甲方解决与责任方的纠纷。</p>
+  <p> 2、因乙方原因解除合同时，应提前<u><input type="text" name="loops143"></u>天通知甲方，并承担已产生的费用和代办费用。如未按期通知甲方，除承担已产生费用和代办费用以外，另向甲方支付代办费用总额的10%违约金。</p>
+  <p> 3、甲方未按照合同约定的时间支付相关费用，乙方有权解除合同，甲方应向乙方支付合同金额的20%的违约金，由此造成的损失由甲方承担。</p>
+  <p> 4、甲方在签订本合同后要求取消或修改本合同的，其所付乙方的服务费和已经实际发生的费用，以及乙方已经支付给相应的服务经营者而无法退回的费用不予退还，造成的损失由甲方负责，扣除损失及违约金（总金额的20%）后的余款由乙方退还甲方。</p>
+  <p> 5、甲方未按约定的时间、地点到达或接受服务事项，而造成经济损失的，由甲方自行负责，乙方不承担责任。</p>
+  <p> 6、甲方在自行活动中，造成的任何财产损失和人身意外伤害，都与乙方无关。</p>
+  <p> <strong>第六条：第三方价格变动说明</strong></p>
+  <p> 乙方为甲方代办单项委托服务，均由服务的提供方完成相关服务，在双方签订合同后而尚未实际履行时，若遇第三方价格调整，影响到本合同预订价格时，若降价，乙方向甲方退还预订价格的差额；若提价，乙方应积极维护甲方权益，向第三方交涉，尽量维持原价；在协商无效而第三方出据有效证明的情况下，有甲方补齐差价。否则，乙方有权中止本合同。</p>
+  <p> <strong>第七条：补充约定事项</strong></p>
+  <p>1、乙方只在甲方委托服务范围内为甲方提供服务，委托服务事项之外甲方所发生的问题，乙方概不承担任何责任。</p>
+  <p> 2、为避免甲方的人身财产损失，乙方建议甲方自愿购买人身意外保险。</p>
+  <p> <strong>3、乙方郑重提醒甲方应安排好自己的活动项目，包括但不限于谨慎购物，谨慎参加赛车、骑马、攀岩、滑翔、探险、漂流、潜水、游泳、滑雪、滑冰、滑板、跳伞、热气球、蹦极、冲浪等高风险活动，妥善保管好个人物品，若由此造成的人身伤亡或财产损失，乙方不负责赔偿。</strong></p>
+  <p> <strong>第八条:合同效力与争议解决</strong></p>
+  <p>
+  </p><p align="left">1、本合同及其附件一式二份，双方各执一份，具有同等法律效力，合同自双方签字或盖章之日起生效，以乙方向甲方交付完毕所代办的票证或完成单项服务而终止。</p>
+  <p> 2、本合同在履行中发生争议，双方应协商解决，协商不成，可向有管辖权的旅游执法机构、工商行政管理部门申请调解，也可采取如下方式解决：</p>
+    <p> 
+      <input type="checkbox" value="0" class="mycheck6">向仲裁机构申请仲裁。
+      <input type="checkbox" value="1" class="mycheck6">向成都市锦江区人民法院提起诉讼。
+      <input type="hidden" name="loops144">
+      <script>
+        $(document).on('click','.mycheck6',function(){
+          if($(this).val()==0)
+          {
+            var str = "<input type='checkbox' checked='true' class='mycheck6' \/>向仲裁机构申请仲裁。 <input type='checkbox' class='mycheck6' \/>向成都市锦江区人民法院提起诉讼。";
+          }else{
+            var str = "<input type='checkbox' class='mycheck6' \/>向仲裁机构申请仲裁。<input type='checkbox' checked='true' class='mycheck6' \/>向成都市锦江区人民法院提起诉讼。";
+          } 
+          $('input[name="loops144"]').attr('value',str);
+          $(this).siblings('.mycheck6').attr('checked',false);
+        });
+      </script>
+    </p>
+  
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tbody>
+      <tr>
+        <td width="50%" height="28" valign="middle">甲方签字（盖章）：<u><input type="text" name="loops145"></u></td>
+        <td width="50%" valign="middle">乙方盖章:<u><input type="text" name="loops146"></u></td>
+      </tr>
+      <tr>
+        <td width="50%" height="28" valign="middle">甲方代表：<u><input type="text" name="loops147"></u></td>
+        <td width="50%" valign="middle">乙方代表（经办人）:<u><input type="text" name="loops148"></u></td>
+      </tr>
+      <tr>
+        <td width="50%" height="28" valign="middle">甲方同行人员名单、身份证号码附后</td>
+        <td width="50%" valign="middle">电话:<u><input type="text" name="loops149"></u></td>
+      </tr>
+      <tr>
+        <td width="50%" height="28" valign="middle">签约地点：<u><input type="text" name="loops150"></u></td>
+        <td width="50%" valign="middle">签约低点：<u><input type="text" name="loops151"></u></td>
+      </tr>   
+      <tr>
+        <td width="50%" height="28" valign="middle">日期：<u><input type="text" name="loops152"></u>年<u><input type="text" name="loops153"></u>月<u><input type="text" name="loops154"></u>日</td>
+        <td width="50%" valign="middle">日期：<u><input type="text" name="loops155"></u>年<u><input type="text" name="loops156"></u>月<u><input type="text" name="loops157"></u>日</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+<script>
+  $(document).on('click','.mycheck1',function(){
+    if($(this).val()==0)
+    {
+      var str = "<input type='checkbox' checked='true' class='mycheck1' \/>个人 <input type='checkbox' class='mycheck1' \/>团体签约人代表";
+    }else{
+      var str = "<input type='checkbox' class='mycheck1' \/>个人<input type='checkbox' checked='true' class='mycheck1' \/>团体签约人代表";
+    } 
+    $('input[name="loops158"]').attr('value',str);
+    $(this).siblings('.mycheck1').attr('checked',false);
+  });
+
+</script>
+
+
+</body>
+</html>

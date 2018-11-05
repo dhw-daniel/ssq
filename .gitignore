@@ -1,0 +1,8 @@
+/.idea
+/.vscode
+*.log
+/.git
+/runtime/cache/*
+/runtime/log/*
+/runtime/temp/*
+/old

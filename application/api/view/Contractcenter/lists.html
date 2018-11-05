@@ -1,0 +1,462 @@
+{extend name="layout" /}
+<!-- 外部资源 -->
+{block name="link"}
+
+{/block}
+<!-- 外部资源 -->
+
+
+<!-- 面包屑 -->
+{block name="crumbs"}
+
+{/block}
+<!-- 面包屑 -->
+
+<!-- 内容部分 中部 -->
+{block name="content"}
+
+	<!-- searchBox -->
+	<div class="searchBox-1">
+		<div class="stateBox">
+			<a href="" class="statelink {if $active == 1 }active{/if}">综合</a>
+			<form method="get" action="">
+				<div class="sim-select textac cp" init-type="1">
+					<span class="vm">审核状态：</span><span class="vm">{$key1?$key1:不限}</span>
+					<img src="__IMG__/select-down.png" class="vm">
+					<div class="sim-option-box disnone">
+						<p data="1">未提交</p>
+						<p data="2">待审核</p>
+						<p data="3">已通过</p>
+						<p data="4">未通过</p>
+						<input class="changepost" type="hidden" name="c_status" value="{$c_status}">
+					</div>
+				</div>
+				<div class="sim-select textac cp" init-type="1">
+					<span class="vm">合同状态：</span><span class="vm">{$key2?$key2:不限}</span>
+					<img src="__IMG__/select-down.png" class="vm">
+					<div class="sim-option-box disnone">
+						<p data="5">待填写</p>
+						<p data="1">待创建</p>
+						<p data="2">待盖章</p>
+						<p data="3">待签约</p>
+						<p data="4">已作废</p>
+						<input class="changepost" type="hidden" name="contract_status" value="{$contract_status}">
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="searchform">
+			<form method="get" action="">
+				<div class="sim-select textac cp" init-type="2">
+					<span class="vm">{$keyword}</span>
+					<img src="__IMG__/select-down.png" class="vm">
+					<div class="sim-option-box disnone">
+						<p key-type="1">线路名称</p>
+						<p key-type="2">订单编号</p>
+						<p key-type="3">供应商</p>
+						<p key-type="4">合同名称</p>
+						<p key-type="5">合同编码</p>
+					</div>
+				</div>
+                <input type="hidden" name="keytype" value="{$keytype}">
+                <input type="text" name="word" class="keywords" value="{$word?$word:''}"><button type="submit"></button>
+			</form>
+		</div>
+	</div>
+	
+	<!-- searchBox -->
+	<table cellpadding="0" cellspacing="0" class="hasborder">
+		<thead>
+			<tr>
+				<th style="width:165px">合同名称</th>
+				<th>出团日期</th>
+				<th>出团人数</th>
+				<th style="width:165px">供应商</th>
+				<th>审核状态</th>
+				<th>未通过原因</th>
+				<th>签约状态</th>
+				<th>编号</th>
+				<th style="width:162px">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name="data" id="vo" empty="$empty"}
+				<tr>
+					<td class="textac">
+						<p style="width:165px" class="textoverflow textoverflow-init textac cp">{$vo.title}</p>
+					</td>
+					<td class="textac">{$vo.group_day}</td>
+					<td class="textac">{$vo.user_num}</td>
+					<td class="textac">
+						<p style="width:165px" class="textoverflow textoverflow-init textac cp">{$vo.supply_name}</p>
+					</td>
+					<td class="textac"><if condition="$vo['c_status'] eq 0">未提交<elseif condition="$vo['c_status'] eq 1"/>待审核<elseif condition="$vo['c_status'] eq 2"/>已通过<else /> 未通过</if></td>
+					<td class="textac">
+						<img src="__IMG__/num-w.png" alt="" init-type="4" class="cp textoverflow-init">
+						<div class="disnone">
+							<p>未通过原因：{$vo.noremark}</p>
+						</div>
+					</td>
+					<td class="textac"><if condition="$vo['contract_status'] eq 0">已作废<elseif condition="$vo['contract_status'] eq 3"/>待盖章<elseif condition="$vo['contract_status'] eq 4"/>待签约<elseif condition="$vo['contract_status'] eq 5"/>已签约<elseif condition="$vo['contract_status'] eq 6"/>已失效<else /> 未提交</if></td>
+					<td class="textac">
+						<img src="__IMG__/num-w.png" alt="" init-type="4" class="cp textoverflow-init">
+						<div class="disnone">
+							<p>订单编号：{$vo.onumber}</p>
+							<p>合同编号：{$vo.cp_number}</p>
+							<p>旅行社编号：{$vo.c_number}</p>
+						</div>
+					</td>
+					<td class="textac">
+						<a href="javascript:;" data-order-id="1" class="operation operation-init">操作<img src="__IMG__/grand-s-b.png" class="vm"></a>
+					</td>
+				</tr>
+				<tr class="operationTr disnone">
+					<td colspan="10" class="textar">
+
+						{if $vo['contract_status'] > 2}
+							<a data-uri="" onclick="zuofei(this)" class="cp watch color2"><img class="vm" src="__IMG__/backstep.png" alt=""><span class="vm">合同作废</span></a>
+						{/if}
+						{if $vo['contract_status'] == 0}
+							<a href="javascript:stupidLaoxu2('{$vo['cp_number']}','')" class="watch color2"><img class="vm" src="__IMG__/backstep.png" alt=""><span class="vm">上传合同补充凭证</span></a>							
+							<a class="watch color1 cp" onclick="seapj(this)" uri ="">
+							<img class="vm" src="__IMG__/cz-1.png" alt=""><span class="vm">查看补充凭证</span>
+							</a>
+							<a href="" class="watch color1"><img class="vm" src="__IMG__/cz-1.png" alt=""><span class="vm">查看合同</span></a>
+						{/if}
+						{if $vo['contract_status'] == 5}
+						<a href="javascript:stupidLaoxu('{$vo['cp_number']}','')"  class="down color2"><img class="vm" src="__IMG__/ups.png" alt=""><span class="vm">上传委托书</span></a>
+						<a href="" class="down color1" target="_blank"><img class="vm" src="__IMG__/printf.png" alt=""><span class="vm">打印合同概要</span></a>						
+						<a href="" class="down color2"><img class="vm" src="__IMG__/cz-3.png" alt=""><span class="vm">下载合同</span></a>
+						{/if}
+						{if ($vo['contract_status'] == 2) AND (($vo['order_state'] == 3) OR ($vo['order_state'] == 4) OR ($vo['order_state'] == 6))}
+							<a href="" class="down color1"><img class="vm" src="__IMG__/cz-13.png" alt=""><span class="vm">填写合同</span></a>
+						{/if}
+						{if ($vo['contract_status'] == 1) and (($vo['c_status'] == 0) or ($vo['c_status'] == 3))}
+							<a href="" class="watch color1"><img class="vm" src="__IMG__/cz-2.png" alt=""><span class="vm">提交审核</span></a>
+							<a href="" class="watch color2"><img class="vm" src="__IMG__/cz-7.png" alt=""><span class="vm">修改合同</span></a>
+						{/if}
+						{if ($vo['contract_status'] == 1) and ($vo['c_status'] == 2)}
+							<a href="javascript:;" class="watch color1" onclick="creat('{$vo['c_number']}','{$vo['lt_id']}')"><img class="vm" src="__IMG__/cz-12.png"  alt=""><span class="vm">生成合同</span></a>
+							<a href="" class="watch color2"><img class="vm" src="__IMG__/cz-7.png" alt=""><span class="vm">查看合同</span></a>
+						{/if}
+						{if $vo['c_status'] == 1}
+							<a href="" class="watch color2"><img class="vm" src="__IMG__/cz-7.png" alt=""><span class="vm">查看合同</span></a>
+						{/if}
+						{if $vo['contract_status'] == 3}
+							<a href="" class="watch color1"><img class="vm" src="__IMG__/cz-11.png" alt=""><span class="vm">合同盖章</span></a>
+						{/if}
+						{if $vo['contract_status'] == 4}
+							<a href="javascript:qianyue('{$vo['c_number']}');" class="watch color2"><img class="vm" src="__IMG__/cz-14.png" alt=""><span class="vm">合同签约</span></a>
+						{/if}
+						{if $vo['contract_status'] > 2}
+						<a href="" class="watch color1"><img class="vm" src="__IMG__/cz-1.png" alt=""><span class="vm">查看合同</span></a>
+						<a href="javascript:wapshow('{$vo['c_number']}');" class="watch color1"><img class="vm" src="__IMG__/cz-1.png" alt=""><span class="vm">手机查看</span></a>
+						{/if}
+						<a href="" target="_blank" class="watch color1"><img class="vm" src="__IMG__/cz-1.png" alt=""><span class="vm">查看订单</span></a>	
+
+						{empty name="vo['remark']"}
+						<a href="javascript:;" class="watch color1" onclick="addremark(this,'0','{$vo['c_number']}')"><img class="vm" src="__IMG__/cz-12.png" alt=""><span class="vm">添加备注</span></a>
+						{else /}
+						<a href="javascript:;" data-remark="{$vo['remark']}" class="watch color1" onclick="addremark(this,'1','{$vo['c_number']}')"><img class="vm" src="__IMG__/cz-12.png" alt=""><span class="vm">查看备注</span></a>
+						{/empty}
+												
+					</td>
+				</tr>
+			{/volist}
+
+		</tbody>
+	</table>
+	<div class="pagewrap">
+		{$page|raw}
+	</div>
+
+	<input type="hidden" id="copy" >
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.1.6/ZeroClipboard.min.js" ></script>
+	<script>
+		$(function() {
+	
+			var client = new ZeroClipboard($("#copy_button") );
+
+			client.on( "ready", function( readyEvent ) {
+			  // alert( "ZeroClipboard SWF is ready!" );
+
+			  client.on( "aftercopy", function( event ) {
+			    // `this` === `client`
+			    // `event.target` === the element that was clicked
+			    //event.target.style.display = "none";
+			    //alert("Copied text to clipboard: " + event.data["text/plain"] );
+				  alert("Copied text to clipboard: " + $("#copy_button").attr("data-clipboard-text") );
+				  $("#copy_button").after("<span>" + $("#copy_button").attr("data-clipboard-text") +  "</span>")
+			  } );
+			} );
+			
+		});
+	</script>
+	<script>
+		//上传委托书
+		function stupidLaoxu(obj,uri)
+		{
+			var str = '';
+			var ajax_url = $('#ajax_host').val();
+			$.get(uri,function(data,status){
+				if(data)
+				{
+					for(i in data)
+					{
+						str+='<img class="fl" src='+data[i].url+' width="40" height="40" style="margin-right:10px;border:1px solid #dadada;margin-top:10px">';
+					}
+				};
+				layer.open({
+					title:'上传委托书',
+					content:'<form action="'+ajax_url+'/Home/Upload/upload_imgs/type/8/cnm/'+obj+'" enctype="multipart/form-data" method="post"><input id="sblx" type="file" name="file"/></form><p class="picloadmsg"></p><div class="picbox clearfix">'+str+'</div><form id="saveform" method="post" action="/Home/Contracts/savePrintImg/cnm/'+obj+'"></form>',
+					area:['600px','500px'],
+					btn:['保存'],
+					yes:function(){
+						$('#saveform').submit();
+					}
+				})
+			})
+		}
+		$(document).on('change','#sblx',function(){
+			// var type = this.getAttribute('nctype');
+            var file_path = $(this).val();
+            if (file_path == '') {
+                return false;
+            }
+            console.log(file_path);
+            $(this).parent().ajaxSubmit({
+                dataType: 'json',
+                uploadProgress: function (event, position, total, percentComplete) {
+                    $('.picloadmsg').text('正在上传...' + percentComplete + '%')
+                },
+                success: function (data) {
+                    var img = '<span class="fl" style="position:relative;border:1px solid #dadada;margin-right:10px;width:40px;height:40px;margin-top:10px"><i class="miscols cp" style="position:absolute;top:0;right:0;width:15px;height:15px;color:#fff;background:red;text-align:center;line-height:15px;font-style: inherit;">x</i><img src='+data.pic+' style="" width="40" height="40"></span>';
+                    $('.picbox').append(img);
+                    $('#saveform').append('<input type="hidden" name="url[]" value='+data.pic+'>')
+                    $('.picloadmsg').text('');
+                }
+            })
+		});
+		$(document).on('click','.miscols',function(){
+			var ins = $(this).index('.miscols');
+			$(this).parent().remove();
+			$('input[name="url[]"]').eq(ins).remove();
+		})
+	</script>
+	<script>
+		//上传合同补充凭证
+		function stupidLaoxu2(obj,uri)
+		{
+			var str = '';
+			var ajax_url = $('#ajax_host').val();
+			$.get(uri,function(data,status){
+				if(data)
+				{
+					for(i in data)
+					{
+						str+='<img class="fl" src='+data[i].url+' width="40" height="40" style="margin-right:10px;border:1px solid #dadada;margin-top:10px">';
+					}
+				};
+				layer.open({
+					title:'上传合同补充凭证',
+					content:'<form action="'+ajax_url+'/Home/Upload/upload_imgs/type/8/cnm/'+obj+'" enctype="multipart/form-data" method="post"><input id="sblx2" type="file" name="file"/></form><p class="picloadmsg"></p><div class="picbox clearfix">'+str+'</div><form id="saveform" method="post" action="/Home/Contracts/saveDelImg/cnm/'+obj+'"></form>',
+					area:['600px','500px'],
+					btn:['保存'],
+					yes:function(){
+						$('#saveform').submit();
+					}
+				})
+			})
+		}
+		$(document).on('change','#sblx2',function(){
+			// var type = this.getAttribute('nctype');
+            var file_path = $(this).val();
+            if (file_path == '') {
+                return false;
+            }
+            console.log(file_path);
+            $(this).parent().ajaxSubmit({
+                dataType: 'json',
+                uploadProgress: function (event, position, total, percentComplete) {
+                    $('.picloadmsg').text('正在上传...' + percentComplete + '%')
+                },
+                success: function (data) {
+                    var img = '<span class="fl" style="position:relative;border:1px solid #dadada;margin-right:10px;width:40px;height:40px;margin-top:10px"><i class="miscols2 cp" style="position:absolute;top:0;right:0;width:15px;height:15px;color:#fff;background:red;text-align:center;line-height:15px;font-style: inherit;">x</i><img src='+data.pic+' style="" width="40" height="40"></span>';
+                    $('.picbox').append(img);
+                    $('#saveform').append('<input type="hidden" name="url[]" value='+data.pic+'>')
+                    $('.picloadmsg').text('');
+                }
+            })
+		});
+		$(document).on('click','.miscols2',function(){
+			var ins = $(this).index('.miscols2');
+			$(this).parent().remove();
+			$('input[name="url[]"]').eq(ins).remove();
+		})
+	//查看补充凭证
+	function seapj(obj)
+	{
+		var url = $(obj).attr('uri');
+		$.get(url,function(data,status){
+			var str = '';
+			for(i in data)
+			{
+				str+='<img onclick="bigpic(this)" src='+data[i].url+' width="60" style="margin-right:10px">';
+			}
+			layer.open({
+				title:'补充凭证',
+				content:'<div>'+str+'</div>',
+				btn:[],
+				area:['500px','300px']
+				,zIndex: layer.zIndex //重点1
+		        ,success: function(layero){
+		          layer.setTop(layero); //重点2
+		        }
+			})
+		})
+		
+	}
+	function bigpic(obj){
+		var str  ='<img src='+$(obj).attr('src')+' class="cp" style="width:100%;display:block">' ;
+		var index2 = layer.getFrameIndex(window.name); //获取窗口索引
+		parent.layer.close(index2);
+		layer.open({
+			title:'补充凭证',
+			content:'<div>'+str+'</div>',
+			btn:[],
+			area:['800px','600px']
+		})
+
+	}			
+	</script>	
+<script>
+	//var clipe = new ZeroClipboard(document.getElementById("clip"));
+	function creat (obj,lt_id) {
+			var index = null;
+			$.ajax({
+             type: "post",
+             url: "",
+             data: {c_number:obj,type:0,lt_id:lt_id},////type 0订单合同  1自由合同
+             dataType: "json",
+			 beforeSend:function(){
+				index = layer.load(1);
+			 },
+             success: function(data){
+					//弹窗提示，刷新页面
+				if(data['type']){
+					var info = data['msg'];
+				}else{
+					var info = data['msg']+'，如多次不成功请联系旅行社管理员';
+				}
+				
+				layer.msg(info,{shift:0,time:3000},function(){
+					window.location.reload();
+				})
+				
+			}
+			});	
+		
+	};
+	// 合同签约
+	function qianyue(c_num){
+		$.post("",{'c_number':c_num},function(data){
+			layer.open({
+				title:'扫描签约',
+				content:'<img src='+data['pic']+' style="display:block;margin:0 auto" width="200" height="200"><span>网址：'+data['url']+'</span>',
+				area:['300px'],
+				btn:[]
+			})
+		})
+	}
+	// 手机查看
+	var client;
+	function wapshow(c_num){
+		$.ajax({
+			type:'post',
+			url:"",
+			dataType:'json',
+			data:{'c_number':c_num},
+			beforeSend:function(){
+				 client = new ZeroClipboard($("#copy") );
+				 client.on('copy',function(e){
+				 	console.log(e)
+				 })
+			},
+			success:function(data){
+				$('#copy').attr('data-clipboard-text',data['url']);
+				layer.open({
+					title:'查看合同',
+					content:'<img src='+data['pic']+' style="display:block;margin:0 auto" width="200" height="200"><span onclick="shs()">网址：'+data['url']+'</span>',
+					area:['300px'],
+					btn:[]
+				})
+			}
+		})
+	}	
+		
+	function shs(){
+			client.emit("copy");
+			// client.on( "ready", function( readyEvent ) {
+			//    console.log( "ZeroClipboard SWF is ready!" );
+
+			//   client.on( "aftercopy", function( event ) {
+			//     // `this` === `client`
+			//     // `event.target` === the element that was clicked
+			//     //event.target.style.display = "none";
+			//     //alert("Copied text to clipboard: " + event.data["text/plain"] );
+			// 	  alert("Copied text to clipboard: " + $("#copy").attr("data-clipboard-text") );
+			//   } );
+			// } );
+	}
+
+
+	//添加备注
+	function addremark(ob,type,num){
+		var btns;
+		var ready='';
+		var conts='';
+		var titles = '';
+		if(type==0)
+		{
+			btns=['确定','取消'];
+			titles = '添加备注';
+		}else{
+			btns=[];	
+			ready = 'readonly';
+			conts = $(ob).attr('data-remark');
+			titles='查看备注';
+		}
+		layer.open({
+			title:titles
+			,content:'<textarea id="remark" '+ready+' style="width:300px;height:80px;">'+conts+'</textarea>'
+			,btn:btns
+			,yes:function(){
+				if($('#remark').val().trim().length<1){$('#remark').focus();return false}
+				$.post("",{c_number:num,remark:$('#remark').val().trim()},function(data){
+					layer.msg(data['msg'],{shift:0,time:1500},function(){
+						window.location.reload();
+					})
+				})
+			}
+		})
+	}
+	// 合同作废
+	function zuofei(obj)
+	{
+		var url = $(obj).attr('data-uri');
+		layer.confirm('确定作废该合同？', {
+		  btn: ['确定','取消'] //按钮
+		}, function(){
+			$.get(url,function(data){
+				console.log(data);
+				layer.msg(data,{shift:0},function(){
+					window.location.reload();
+				});
+			})
+		}, function(){
+		 	
+		});
+	}
+</script>		
+{/block}
+<!-- 内容部分 中部 -->

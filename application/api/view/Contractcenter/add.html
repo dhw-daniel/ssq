@@ -1,0 +1,477 @@
+{extend name="layout" /}
+
+<!-- 外部资源 -->
+{block name="link"}
+	<link rel="stylesheet" href="__CSS__/rolecog.css">
+{/block}
+<!-- 外部资源 -->
+
+<!-- 面包屑 -->
+{block name="crumbs"}
+
+{/block}
+<!-- 面包屑 -->
+
+<!-- 内容部分 中部 -->
+{block name="content"}
+	<!--是否判断填写内容为空-->
+	<input type="hidden" id="isnullcheck" value="{$is_travel_set.isnullcheck}">
+	
+	{if $type == 1}
+		<!--自由合同-->
+		<input type="hidden" id="ischeck" value="0">		
+	{else /}
+		<!--订单合同-->
+		<input type="hidden" id="ischeck" value="{$is_travel_set.is_sellprice_set}">
+		<input type="hidden" id="group_day" value="{$orderInfo.group_day}">
+		<input type="hidden" id="danji" value="{$orderInfo.sell_price_one}">
+		<input type="hidden" id="pinji" value="{$orderInfo.sell_price_two}">
+		<input type="hidden" id="hotji" value="{$orderInfo.sell_price_three}">	
+		<input type="hidden" id="sellPriceLoops" value="{$template[0]['sell_priceLoops']}">
+		<input type="hidden" id="no_checkLoops" value="{$template[0]['no_checkLoops']}">
+	{/if}
+
+		<div class="role-box clearfix" style="padding-bottom:10px;border:1px solid #e6e6e6;border-top:none;">
+			<div class="" style="float:left">
+				<p>
+					<span>合同名称：</span>
+					<input type="text" id="cname" value="{$orderInfo['title']}">
+					<input id="templateId" type="hidden" value="{$templateId?$templateId:$template[0]['templateId']}">
+					<input id="type" type="hidden" value="{$type}">
+					<input id="priceLoops" type="hidden" value="{$template[0]['priceLoops']}">	
+				</p>
+				<p>
+					<span>合同模板：</span>
+					{if $type == 1}
+						<select name="" id="chanurl" onchange="chans(this)" style="width:288px">
+							{foreach name="template" item="vo" }
+							<option data-value="{$vo['templateId']}" data-price="{$vo['priceLoops']}" value="{$url}/api/Contractcenter/show.html?id={$vo['templateId']}&cnumber={$cnumber}&isNew={$isNew}&type={$type}">{$vo['title']}
+							</option>
+							{/foreach}
+						</select>
+					{else /}
+						<span>{$template[0]['title']}</span>
+					{/if}
+				</p>
+				<p>
+					<span>旅行社合同编号：</span>
+					<span>{$cnumber}</span>
+				</p>
+			</div>
+			<div class="" style="float:left;margin-left: 40px;">
+				{if $type == 1}
+					<p>
+						<span>合同人数：</span>
+						<input type="text" id="peoplenum">
+					</p>
+					<p>
+						<span>合同金额：</span>
+						<input type="text" id="htmoney">
+					</p>	
+					<p>
+						{if $is_travel_set['is_waijiao'] == 1}
+							<span>是否外交：</span>
+							<label><input type="radio" name="waij" {php} if($cdata['is_waijiao']==1){echo 'checked';}{/php} value="1">是</label>
+							<label><input type="radio" name="waij" {php} if($cdata['is_waijiao']==0){echo 'checked';}{/php} value="0">否</label>
+						{else/}
+							<input type="hidden" name="waij" value="0">
+						{/if}
+					</p>
+				{else/}
+				{/if}
+			</div>
+		</div>
+		<div class="shadow" style="background:#fff;">
+			<iframe name="parentPage" id="iframe" class="" width="1188" height="430" frameborder="1" scrolling="auto" src="{$url}/api/Contractcenter/show.html?id={$template[0]['templateId']}&cnumber={$cnumber}&isNew={$isNew}&type={$type}">
+			</iframe>			
+		</div>	
+	
+		<!-- 表格统计 -->
+		<div class="tooletable">
+			<form action="">
+				<button type="button" onclick="update(1)" >确认保存</button>
+			</form>
+		</div>
+	
+
+<script>
+	$(function(){
+		var src=$('#iframe').attr('src');
+		//附随机数刷新子页面去缓存
+		$('#iframe').attr('src',src+'?r='+(Math.random())*100000)
+		
+	})
+	//选择模板更换URL
+	function chans(obj){
+		$('#iframe').attr('src',$(obj).val());
+		$('#templateId').val($('#chanurl option:selected').attr('data-value'));
+		$('#priceLoops').val($('#chanurl option:selected').attr('data-price'));
+	}
+	
+
+	function update(obj)//obj为1表示新建  为0表示更新
+	{
+		var childfirme = window.frames["parentPage"].document.getElementById('childform');
+
+		var morechose = $(childfirme).find('#morechose').length;
+		var morechoseZL = $(childfirme).find('#morechoseZL').length;
+		var morechose11 = $(childfirme).find('#morechose11').length;
+		if(morechose)
+		{
+			console.log(1);
+			var htmls = [{str1:"<input type='checkbox' ",str2:" class='mycheck2' value='0' \/>代订交通票",val:0},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck2' value='1' \/>代订房",val:1},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck2' value='2' \/>代办签证签注",val:2},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck2' value='3' \/>代订车",val:3},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck2' value='4' \/>导游服务",val:4},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck2' value='5' \/>其他",val:5}]
+			console.log('gzl');
+			$(childfirme).find('input[isc="iscs"]').each(function(i){
+				for (var i = 0; i < htmls.length; i++) {
+					if($(this).val()==htmls[i].val)
+					{
+						htmls[i].str1 +="checked='true' isc='iscs'";
+					}
+				};
+			});
+			var str = ""
+			for (var i = 0; i < htmls.length; i++) {
+				str+=htmls[i].str1+htmls[i].str2;
+			};
+			console.log(str);	
+			$(childfirme).find('input[name="loops68"]').val(str);
+			
+		}
+		if(morechoseZL)
+		{
+			console.log(1);
+			var htmls = [{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='0' \/>代订票",val:0},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='1' \/>代订房",val:1},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='2' \/>代订车",val:2},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='3' \/>代办签证签注",val:3},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='4' \/>导游服务",val:4},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='5' \/>自驾车",val:5},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='6' \/>其他",val:6}]
+			console.log('zl');
+			$(childfirme).find('input[isc="iscs"]').each(function(i){
+				for (var i = 0; i < htmls.length; i++) {
+					if($(this).val()==htmls[i].val)
+					{
+						htmls[i].str1 +="checked='true' isc='iscs'";
+					}
+				};
+			});
+			var str = ""
+			for (var i = 0; i < htmls.length; i++) {
+				str+=htmls[i].str1+htmls[i].str2;
+			};
+			console.log(str);	
+			$(childfirme).find('input[name="loops17"]').val(str);
+		}
+		if(morechose11)
+		{
+			console.log(1);
+			var htmls = [{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='0' \/>代订票",val:0},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='1' \/>代订房",val:1},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='2' \/>代订车",val:2},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='3' \/>代办签证签注",val:3},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='4' \/>导游服务",val:4},
+							{str1:"<input type='checkbox' ",str2:" class='mycheck3' value='5' \/>其他",val:5}]
+			console.log('zl');
+			$(childfirme).find('input[isc="iscs"]').each(function(i){
+				for (var i = 0; i < htmls.length; i++) {
+					if($(this).val()==htmls[i].val)
+					{
+						htmls[i].str1 +="checked='true' isc='iscs'";
+					}
+				};
+			});
+			var str = ""
+			for (var i = 0; i < htmls.length; i++) {
+				str+=htmls[i].str1+htmls[i].str2;
+			};
+			console.log(str);	
+			$(childfirme).find('input[name="loops11"]').val(str);
+		}
+		
+		//旅行社是否设置判断指导销售价的标识
+		var ischeck = $('#ischeck').val();
+		var outTime = $('#group_day').val();
+		if(ischeck=="1"&&outTime.length!=0){
+			//合同模板中指导销售价的参数
+			var sellPriceLoops = $('#sellPriceLoops').val();
+			var ctime = new Date(outTime).getTime();
+			//var pricecr = $('input[name="price[]"]').eq(0).val()*1;
+			var pricecr = $(childfirme).find("input[name="+sellPriceLoops+"]").val()*1;
+			
+			var nowtiY = outTime.substring(0,4);
+			
+			var danji = {
+				times:new Date(nowtiY+"-11-16").getTime(),
+				timee:new Date((nowtiY*1+1)+"-03-31").getTime()
+			}
+			var danji2 = {
+				times:new Date(nowtiY+"-01-01").getTime(),
+				timee:new Date(nowtiY+"-03-31").getTime()
+			}
+			var pinji = {
+				times:new Date(nowtiY+"-04-01").getTime(),
+				timee:new Date(nowtiY+"-07-31").getTime()
+			}
+			var wanji = {
+				times:new Date(nowtiY+"-08-01").getTime(),
+				timee:new Date(nowtiY+"-11-15").getTime()
+			}
+			if(ctime>=danji.times&&ctime<=danji.timee)
+			{
+				if(pricecr<$('#danji').val())
+				{
+					layer.msg('成人单价不能低于指导价'+$('#danji').val(),{shift:0});
+					return false;
+				}
+			}
+			if(ctime>=danji2.times&&ctime<=danji2.timee)
+			{
+				if(pricecr<$('#danji').val())
+				{
+					layer.msg('成人单价不能低于指导价'+$('#danji').val(),{shift:0});
+					return false;
+				}
+			}
+			if(ctime>=pinji.times&&ctime<=pinji.timee){
+				if(pricecr<$('#pinji').val())
+				{
+					layer.msg('成人单价不能低于指导价'+$('#pinji').val(),{shift:0});
+					return false;
+				}
+			}
+			if(ctime>=wanji.times&&ctime<=wanji.timee){
+				if(pricecr<$('#hotji').val())
+				{
+					layer.msg('成人单价不能低于指导价'+$('#hotji').val(),{shift:0});
+					return false;
+				}
+			}
+		}
+
+		//旅行社是否设置判断合同中不能有空的标识
+		var isnullcheck = $('#isnullcheck').val();
+		if(isnullcheck=="1"){
+			var isall = true;
+			$(childfirme).find('input[type=text]').each(function(){
+				var val = $(this).val();
+				if(!val)
+				{
+					layer.msg('合同未填全',{shift:0});
+					isall = false;
+					return false;
+				}
+			});
+			if(!isall){
+				return false;
+			}
+			var istext = true;
+			$(childfirme).find('textarea').each(function(){
+				var val = $(this).val();
+				if(!val)
+				{
+					layer.msg('合同未填全',{shift:0});
+					istext = false;
+					return false;
+				}
+			});
+			if(!istext){
+				return false;
+			}
+		}		
+
+		var op1 = $(childfirme).find('input[name="loops1"]').val().replace(/\s+/g,"");
+		var op3 = $(childfirme).find('input[name="loops3"]').val().replace(/\s+/g,"");
+		var op4 = $(childfirme).find('input[name="loops4"]').val().replace(/\s+/g,"");
+		var op5 = $(childfirme).find('input[name="loops5"]').val().replace(/\s+/g,"").substring(0,11);
+		$(childfirme).find('input[name="loops1"]').val(op1);
+		$(childfirme).find('input[name="loops3"]').val(op3);
+		$(childfirme).find('input[name="loops4"]').val(op4);
+		$(childfirme).find('input[name="loops5"]').val(op5);		
+		var statisDate = $(window.frames["parentPage"].document.getElementById('childform')).serialize();
+		
+		var emil = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+		var card_15 = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$/;
+		var card_18 = /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+		var phone = /0?(13|14|15|17|18)[0-9]{9}/;
+		var c_num = $('#c_num').val();
+		if(!$('#cname').val())
+		{
+			layer.msg("合同名称必须填写！",{
+				time:1500
+			});
+			return;
+		}
+		
+		
+		if(!op1)
+		{
+			layer.msg("请输入旅游者代表姓名",{
+				time:1500
+			});
+			$(childfirme).find('input[name="loops1"]').focus();
+			return;
+		}
+		if(!emil.test(op3))
+		{
+			layer.msg("邮箱输入有误",{
+				time:1500
+			});
+			$(childfirme).find('input[name="loops3"]').focus();
+			return;
+			
+		}
+		if(!card_15.test(op4)&&!card_18.test(op4))
+		{
+			layer.msg("证件号有误，身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X",{
+				time:1500
+			});
+			$(childfirme).find('input[name="loops4"]').focus();
+			return;
+			
+		}
+		if(!phone.test(op5))
+		{
+			layer.msg("手机号有误",{
+				time:1500
+			});
+			$(childfirme).find('input[name="loops5"]').focus();
+			return;
+			
+		}
+		var title = $('#cname').val();
+		var templateId = $('#templateId').val();
+		var type = $('#type').val();
+		var priceLoops = $('#priceLoops').val();
+		
+		if(obj){
+			
+			if(type){
+			//自由合同
+			var peoplenum = $('#peoplenum').val();
+			var htmoney = $('#htmoney').val();
+			var waiji = $("input[name='waij']:checked").val();		
+				//新建传的方法
+				$.ajax({
+					type:'POST',
+					dataType:'JSON',
+					data:statisDate+'&title='+title+'&templateId='+templateId+'&type='+type+'&priceLoops='+priceLoops+'&peoplenum='+peoplenum+'&htmoney='+htmoney+'&waiji='+waiji,
+					url:"",
+					async: false,
+					success:function(data){
+						console.log(data);
+							//setInterval(function(){window.location.reload()},1500);
+						//弹窗提示，刷新页面
+						layer.open({
+							type:0,
+							content:data['msg'],
+							end:function(){
+								if(data['url']){
+									window.location.href=data['url']; 
+								}else{
+									window.location.reload();
+								}
+								
+							}
+						})					
+					}
+				})	
+			}else{
+			//订单合同
+				//新建传的方法
+				$.ajax({
+					type:'POST',
+					dataType:'JSON',
+					data:statisDate+'&title='+title+'&templateId='+templateId+'&type='+type+'&priceLoops='+priceLoops,
+					url:"",
+					async: false,
+					success:function(data){
+						console.log(data);
+							//setInterval(function(){window.location.reload()},1500);
+						//弹窗提示，刷新页面
+						layer.open({
+							type:0,
+							content:data['msg'],
+							end:function(){
+								if(data['url']){
+									window.location.href=data['url']; 
+								}else{
+									window.location.reload();
+								}
+								
+							}
+						})					
+					}
+				})				
+			}
+	
+		}else{
+			//编辑传的方法	
+			if(type){
+			//自由合同
+				var peoplenum = $('#peoplenum').val();
+				var htmoney = $('#htmoney').val();
+				var waiji = $("input[name='waij']:checked").val();	
+				
+				$.ajax({
+					type:'POST',
+					dataType:'JSON',
+					data:statisDate+'&title='+title+'&templateId='+templateId+'&type='+type+'&priceLoops='+priceLoops+'&peoplenum='+peoplenum+'&htmoney='+htmoney+'&waiji='+waiji,
+					url:"",
+					async: false,
+					success:function(data){
+						console.log(data);
+							//setInterval(function(){window.location.reload()},1500);
+						//弹窗提示，刷新页面
+						layer.open({
+							type:0,
+							content:data['msg'],
+							end:function(){
+								if(data['url']){
+									window.location.href=data['url']; 
+								}else{
+									window.location.reload();
+								}
+							}
+						})					
+					}
+				})	
+			}else{
+			//订单合同
+				$.ajax({
+					type:'POST',
+					dataType:'JSON',
+					data:statisDate+'&title='+title+'&templateId='+templateId+'&type='+type+'&priceLoops='+priceLoops,
+					url:"",
+					async: false,
+					success:function(data){
+						console.log(data);
+							//setInterval(function(){window.location.reload()},1500);
+						//弹窗提示，刷新页面
+						layer.open({
+							type:0,
+							content:data['msg'],
+							end:function(){
+								if(data['url']){
+									window.location.href=data['url']; 
+								}else{
+									window.location.reload();
+								}
+							}
+						})					
+					}
+				})				
+			}				
+		}
+	
+	}
+	
+</script>	
+	
+{/block}
+<!-- 内容部分 中部 -->
