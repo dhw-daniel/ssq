@@ -8,9 +8,8 @@
 
 
 namespace app\api\controller;
-require '../extend/rpc/jsonRPCClient.php';
 use think\Controller;
-use rpc\jsonRPCClient;
+use app\api\model\ContractQueue;
 class Contract extends Controller{
     private $_developerId = '2091829019505852963';
     private $_pem = '-----BEGIN RSA PRIVATE KEY-----
@@ -1026,21 +1025,25 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
     }
 
-    //测试rpc生成合同请求
-    function ceshiCreate()
+    //手动更新状态
+    function changeStatus()
     {
-        $host = 'http://sdata.mankkk.cn';
-        $url = $host.'/Home/ordersService';
-        $client = new jsonRPCClient("$url");
-        $where = array();
-        $pram['session']=$_SESSION;
-        $pram['post']=$_POST;
-        $pram['get']=$_GET;
-        $pram['where']=$where;
-        $pram['mode']='sendCreatTwo';
-        $result = $client->contract($pram);
-        var_dump($result);die;
-        //$this->ajaxReturn($result['data']);
-        //return $result['data'];
+        if(empty($_POST['c_number'])){
+            $res['type'] = 0;
+            $res['msg'] = '参数缺失';
+            return $res;
+        }
+        $where['c_number'] = $_POST['c_number'];
+        $data = ContractQueue::get($where)->toArray();
+        if(empty($data)){
+            $res['type'] = 0;
+            $res['msg'] = '找不到数据';
+            return $res;
+        }
+        $res['type'] = 0;
+        $res['data'] = \GuzzleHttp\json_encode($data);
+        $res['msg'] = '参数缺失22';
+        return $res;
+
     }
 }
