@@ -1093,7 +1093,12 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 $shell = 'wkhtmltopdf '.$this->_contract_host.$this->_contract_path.input('param.c_number').' '.$file_path.'/'.input('param.c_number').'.pdf';
                 system($shell, $status);
                 if($status){ //执行失败
-
+                    Cache::rm('up'.input('param.c_number'));
+                    $res['type'] = 0;
+                    $res['data'] = $shell;
+                    $res['code'] = 10007;
+                    $res['msg'] = '执行失败';
+                    return json_encode($res);
                 }
                 if($dataObj->type==0){//订单合同 即多文件合同
 
@@ -1101,6 +1106,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
                 }
             }
+            Cache::rm('up'.input('param.c_number'));
         }
 
         if($dataObj->is_reg_user==1 && $dataObj->is_upload==1 && $dataObj->is_creat==0){//生成合同
