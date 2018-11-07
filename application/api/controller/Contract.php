@@ -1097,9 +1097,10 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     $res['type'] = 0;
                     $res['data'] = $shell;
                     $res['code'] = 10007;
-                    $res['msg'] = '执行失败';
+                    $res['msg'] = '上传合同文件失败';
                     return json_encode($res);
                 }
+                
                 if($dataObj->type==0){//订单合同 即多文件合同
 
                 }else{
