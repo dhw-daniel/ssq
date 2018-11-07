@@ -1170,13 +1170,61 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 $res['type'] = '0';
                 $res['msg'] = '生成合同失败,请重试';
                 if($dataObj->type==0){//订单合同 即多文件合同
-
+                    $path = "/catalog/create/";
+                    //post data
+                    $post_data['senderAccount'] = $dataObj->unit_account;
+                    $post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
+                    $post_data['catalogName'] = input('param.c_number');
+                    $post_data['description'] = "";
+                    $res_create = $this->basePara($path, $post_data);
+                    $create_arr = json_decode($res_create,true);
+                    //自由合同结束
+                    if($create_arr['errno']==0||$create_arr['errno']==242008){ //生成目录成功
+                        $path = "/catalog/uploadContract/";
+                        //post data
+                        $post_data_add['senderAccount'] = $dataObj->unit_account;
+                        $post_data_add['catalogName'] = input('param.c_number');   //合同目录唯一标识
+                        $post_data_add['fid'] = $dataObj->ssq_fid_one;
+                        $post_data_add['title'] = "合同主体";
+                        $file_add_one = $this->basePara($path, $post_data_add);
+                        $post_data_add['fid'] = $dataObj->ssq_fid_two;
+                        $post_data_add['title'] = "合同行程单";
+                        $file_add_two = $this->basePara($path, $post_data_add);
+                        $create_arr_one = json_decode($file_add_one,true);
+                        $create_arr_two = json_decode($file_add_two,true);
+                        if(($create_arr_one['errno']==0||$create_arr_one['errno']==242008)&&($create_arr_two['errno']==0||$create_arr_two['errno']==242008)){ //生成成功
+                            $dataObj->is_creat = 1;
+                            $dataObj->contract_id = input('param.c_number');
+                            $dataObj->save();
+                            $res['type'] = '1';
+                            $res['msg'] = '生成合同成功';
+                        }
+                    }
                 }else{
                     //自由合同开始
-
+                    $path = "/contract/create/";
+                    //post data
+                    $post_data['account'] = $dataObj->unit_account;
+                    $post_data['fid'] = $dataObj->ssq_fid_one;
+                    $post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
+                    $post_data['title'] = "合同主体";
+                    $post_data['description'] = "";
+                    $post_data['hotStoragePeriod'] = "31536000";
+                    $res_create = $this->basePara($path, $post_data);
+                    $create_arr = json_decode($res_create,true);
                     //自由合同结束
+                    if($create_arr['errno']==0){ //生成成功
+                        $dataObj->is_creat = 1;
+                        $dataObj->contract_id = $create_arr['data']['contractId'];
+                        $dataObj->save();
+                        $res['type'] = '1';
+                        $res['msg'] = '生成合同成功';
+                    }
                 }
-
+                Cache::rm('create'.input('param.c_number'));
+                $res['code'] = '10005';
+                $res['data'] = $res_create;
+                return json_encode($res);
             }
         }
         $res['type'] = '0';
@@ -1190,16 +1238,30 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     //
     function cs()
     {
-        $path = 'http://fileok.mankk.cn/line//05929333514895956.pdf';
-        $file_name = substr($path,strripos($path,"/")+1);
-        var_dump($file_name);
-        //上传合同文件
+        $path = "/catalog/create/";
+        //post data
+        $post_data['senderAccount'] = '510231196811155237';
+        $post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
+        $post_data['catalogName'] = "ccc";
+        $post_data['description'] = "";
+        $res_create = $this->basePara($path, $post_data);
+        $create_arr = json_decode($res_create,true);
 
-        //创建合同目录
-
-        //向合同目录添加文件
-
-        //自动签署
-
+        if($create_arr['errno']==0||$create_arr['errno']==242008){ //生成目录成功
+            $path = "/catalog/uploadContract/";
+            //post data
+            $post_data_add['senderAccount'] = '510231196811155237';
+            $post_data_add['catalogName'] = "ccc";   //合同目录唯一标识
+            $post_data_add['fid'] = '4305043862222143820';
+            $post_data_add['title'] = "合同主体";
+            $file_add_one = $this->basePara($path, $post_data_add);
+            $post_data_add['fid'] = '658488541325095046';
+            $post_data_add['title'] = "合同行程单";
+            $file_add_two = $this->basePara($path, $post_data_add);
+            $create_arr_one = json_decode($file_add_one,true);
+            $create_arr_two = json_decode($file_add_two,true);
+            var_dump($create_arr_one);
+            var_dump($create_arr_two);
+        }
     }
 }
