@@ -16,9 +16,10 @@ class Contract extends Controller{
     private $_pem = '-----BEGIN RSA PRIVATE KEY-----
 MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf5bascN2yWOb3gj/InnOstLFNMZ/pCNou5OUUSG/L7n84JpUZm2CwFfiRgoO2hkpVsgF+SLSZ85swYwREQ/voobFXet2q1ZHsjZrVw+ec2uaeVxIDRXRmGZRONOUnpnouOgBWOMs0NNvlAgMBAAECgYBj6ceajOF6AvYS3BjpzIFmq8ac71xGA/othRKqXVPlkGlBZD4JCwvEE2uk58h3koGPAbSz1pYHZwq00jOstuUfdtGycRUQ/Xcuocl0t9OIlTpdp2YU3hWr9JU215JRwlwINS27vpHECIux6RbCU2LyFpAoaVT/4iPiXBZZCzRxwQJBAMQiAE7e6LyiR+E2WdEdYgj98zF4uhhwj8LIjFmdIGZ1K01D13Qn6cmCoErnw5Ca48nXyfD/Z/UEu2BQI9yzD5ECQQDB4LTR42eBrjcgFonolV2i4sJOOIqv6wO0/VO+9W6TWsSx6XQAOcOZbedCfKt/DALuJY9xOkzyAcwJbzTU6sUVAkEAw4pOmlOc3+w/E6b3VwgfZG2jV7BQgOtAOOdvHi0MT3oDqO25UaI1cGUeYG++x13VOrg8KlzJDTwhf/2GM5QGMQJAfQO7NPfwn1NKInvGE151EXoslqmo7ASb0FHldWXnFkdaO+pwLVESClYu39Vp9DM3lH5Nv1I7mXWFLrQxmfWEfQJAZZW4RV+kBWUbiDi9u2F4d8FJE4bedjUWnFbeZTUSuE6FMloDUEJqYoDG6ARo+AwVXhiNDQgFlExpRvB8Sz+wqQ==
 -----END RSA PRIVATE KEY-----';
-	private $_host = 'https://openapi.bestsign.info/openapi/v2';
-    private $_contract_host = 'http://test.zl.mankkk.cn';
-    private $_contract_path = '/Distributor/Contracts/show/cnumber/';
+	private $_host = 'https://openapi.bestsign.info/openapi/v2';        //云签请求域名
+    private $_contract_host = 'http://test.zl.mankkk.cn';                //合同展示域名
+    private $_contract_path = '/Distributor/Contracts/show/cnumber/';   //合同展示路径
+    private $_contract_pdf_path = 'http://ssq.mankkk.cn/pdf/';   //合同展示路径
     private static $_instances;
     private $_default_user_agent = '';
     private $_response_headers = '';
@@ -669,19 +670,6 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		}
         return $response;
 	}
-	//上传doc ，docx文件并转化为pdf
-	function upFiletoPdf()
-	{	// https://stackoverflow.com/questions/8986067/how-to-get-the-number-of-pages-in-a-word-document-on-linux  得到页数案例
-		$url = "http://fileok.mankk.cn/line//05899923793617697.doc";
-		//$url = "http://fileok.mankk.cn/line//05899950157579504.docx";
-		$response = file_get_contents($url);
-		$fp = fopen ( 'aa.doc', 'w+' );//新建png文件
-		if($fp){
-			fwrite ( $fp, $response );  //二进制流写入文件
-			fclose ( $fp );  
-		}
-        return $response;
-	}
 		//上传doc ，docx, pdf文件
 	function upFile()
 	{	
@@ -1026,14 +1014,48 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         //自动签署
 
     }
+    //上传doc ，docx, pdf并转为pdf
+    function upFileToPdf($file_name, $file_path, $account)
+    {
+        $filename = $file_name;   //'aa.doc','aa.pdf'
+        $filepath = $file_path;   //'http://xxx.com/cc.doc'
+        $md5file = md5_file($filepath); //得到文件的md5
+        $ftype = substr($filepath,strripos($filepath,".")+1);
+        $fp = fopen($filepath, "r");     //文件是否可读权限
+        if ($fp) {
+            $file_content = chunk_split(base64_encode(file_get_contents($filepath)));   //远程文件得到base64编码
+        }
+        fclose ( $fp );
+        $path = "/storage/upload/";
+        //post data
+        $post_data['account'] = $account;
+        $post_data['fdata'] = $file_content;
+        $post_data['fmd5'] = $md5file;
+        $post_data['ftype'] = $ftype;
+        $post_data['fname'] = $filename;
+        $post_data['fpages'] = 999;  //此处的页码数只要大于实际页码数就没问题
+        $response = $this->basePara($path, $post_data);
+        $resArr = json_decode($response,true);
+        if($resArr['errno']==0&&$ftype!='pdf'){//上传doc成功并且文件类型不是pdf
+            $path_two = "/storage/convert/";
+            //post data
+            $post_data_two['account'] = $account;
+            $post_data_two['fid'] = $resArr['data']['fid'];
+            $post_data_two['ftype'] = "PDF";
+            $res = $this->basePara($path_two, $post_data_two);
+            return $res;
+        }
 
+        return $response;
+
+    }
     //手动更新状态
     function changeStatus()
     {
 
         if(empty(input('param.c_number'))){
-            $res['type'] = 0;
-            $res['code'] = 10001;
+            $res['type'] = '0';
+            $res['code'] = '10001';
             $res['data'] = input('param');
             $res['msg'] = '参数缺失';
             return json_encode($res);
@@ -1041,8 +1063,8 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $where['c_number'] = input('param.c_number');
         $dataObj = ContractQueue::where($where)->find();
         if(empty($dataObj)){
-            $res['type'] = 0;
-            $res['code'] = 10002;
+            $res['type'] = '0';
+            $res['code'] = '10002';
             $res['data'] = $dataObj;
             $res['msg'] = '找不到数据';
             return json_encode($res);
@@ -1070,61 +1092,114 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 $credential['address'] = '';
                 $applyCert = '1';
                 $response = $this->regBaseUser($account, $mail, $mobile, $name, $user_type, $credential, $applyCert);
+                Cache::rm('reg'.input('param.c_number'));
+                $resArr = json_decode($response,true);
+                $res['type'] = '0';
+                $res['msg'] = '注册用户失败,请重试';
+                if($resArr['errno']==0){//用户注册成功
+                    $res['type'] = '1';
+                    $res['msg'] ='注册用户成功';
+                    $dataObj->is_reg_user = 1;
+                    $dataObj->save();
+                }
+                $res['data'] = $resArr;
+                $res['code'] = $resArr['cost'];
+                return json_encode($res);
             }
-            Cache::rm('reg'.input('param.c_number'));
-            $resArr = json_decode($response,true);
-            $res['type'] = 0;
-            $res['msg'] = '注册用户失败,请重试';
-            if($resArr['errno']==0){//用户注册成功
-                $res['type'] = 1;
-                $res['msg'] ='注册用户成功';
-                $dataObj->is_reg_user = 1;
-                $dataObj->save();
-            }
-            $res['data'] = $resArr;
-            $res['code'] = $resArr['cost'];
-            return json_encode($res);
         }
 
         if($dataObj->is_upload==0){//上传文件
             if(empty($boolUp)){
                 Cache::set('up'.input('param.c_number'),'1');
-                $file_path = './pdf';
-                $shell = 'wkhtmltopdf '.$this->_contract_host.$this->_contract_path.input('param.c_number').' '.$file_path.'/'.input('param.c_number').'.pdf';
-                system($shell, $status);
-                if($status){ //执行失败
-                    Cache::rm('up'.input('param.c_number'));
-                    $res['type'] = 0;
-                    $res['data'] = $shell;
-                    $res['code'] = 10007;
-                    $res['msg'] = '上传合同文件失败';
-                    return json_encode($res);
+                $res['type'] = '0';
+                $res['msg'] = '上传文件失败,请重试';
+                if($dataObj->ssq_fid_one=='0'){
+                    $base_dir = './pdf';
+                    $shell = 'wkhtmltopdf '.$this->_contract_host.$this->_contract_path.input('param.c_number').' '.$base_dir.'/'.input('param.c_number').'.pdf';
+                    system($shell, $status);//本地生成合同主体pdf
+                    if($status){ //执行失败
+                        Cache::rm('up'.input('param.c_number'));
+                        $res['type'] = '0';
+                        $res['data'] = $shell;
+                        $res['code'] = '10003';
+                        $res['msg'] = '生成合同主体文件失败';
+                        return json_encode($res);
+                    }
+                    //上传合同主体文件开始
+                    $file_name = input('param.c_number').'.pdf';
+                    $file_path = $this->_contract_pdf_path.$file_name;
+                    $file_res = $this->upFileToPdf($file_name,$file_path,$dataObj->unit_account);  //上传合同主体文件
+                    $file_res_arr = json_decode($file_res,true);
+
+                    if($file_res_arr['errno']==0){ //上传成功
+                        $dataObj->ssq_fid_one = $file_res_arr['data']['fid'];
+                        $dataObj->is_upload = $dataObj->type;     //自由合同type 值为1
+                        $dataObj->save();
+                        $res['type'] = '1';
+                        $res['msg'] = '上传文件成功';
+                    }
+                    //上传合同主体文件结束
                 }
-                
+
+                if($dataObj->type==0&&$dataObj->ssq_fid_two=='0'){//订单合同 即多文件合同
+                    //上传合同行程文件开始
+                    $file_name = substr($dataObj->line_file_path,strripos($dataObj->line_file_path,"/")+1);
+                    $file_path = $dataObj->line_file_path;
+                    $file_res = $this->upFileToPdf($file_name,$file_path,$dataObj->unit_account);  //上传合同主体文件
+                    $file_res_arr = json_decode($file_res,true);
+
+                    if($file_res_arr['errno']==0){ //上传成功
+                        $dataObj->ssq_fid_two = $file_res_arr['data']['fid'];
+                        $dataObj->is_upload = 1;
+                        $dataObj->save();
+                        $res['type'] = '1';
+                        $res['msg'] = '上传文件成功';
+                    }
+                    //上传合同行程文件结束
+                }
+                Cache::rm('up'.input('param.c_number'));
+                $res['code'] = '10004';
+                $res['data'] = $file_res;
+                return json_encode($res);
+            }
+        }
+
+        if($dataObj->is_upload==1 && $dataObj->is_creat==0){//生成合同
+            if(empty($boolCreate)){
+                Cache::set('create'.input('param.c_number'),'1');
+                $res['type'] = '0';
+                $res['msg'] = '生成合同失败,请重试';
                 if($dataObj->type==0){//订单合同 即多文件合同
 
                 }else{
+                    //自由合同开始
 
+                    //自由合同结束
                 }
-            }
-            Cache::rm('up'.input('param.c_number'));
-        }
-
-        if($dataObj->is_reg_user==1 && $dataObj->is_upload==1 && $dataObj->is_creat==0){//生成合同
-            if(empty($boolCreate)){
 
             }
-            $res['type'] = 0;
-            $res['data'] = $boolCreate;
-            $res['code'] = 10009;
-            $res['msg'] = '任务正在处理中，请稍后';
-            return json_encode($res);
         }
-        $res['type'] = 0;
-        $res['code'] = 10010;
-        $res['data'] = Cache::get('up'.input('param.c_number'));
-        $res['msg'] = '22';
+        $res['type'] = '0';
+        $res['code'] = '10000';
+        $res['data'] = '';
+        $res['msg'] = '任务正在处理中，请稍后';
         return json_encode($res);
+
+    }
+
+    //
+    function cs()
+    {
+        $path = 'http://fileok.mankk.cn/line//05929333514895956.pdf';
+        $file_name = substr($path,strripos($path,"/")+1);
+        var_dump($file_name);
+        //上传合同文件
+
+        //创建合同目录
+
+        //向合同目录添加文件
+
+        //自动签署
 
     }
 }
