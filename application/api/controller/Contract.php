@@ -21,6 +21,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     private $_contract_host = 'http://test.zl.mankkk.cn';                //合同展示域名
     private $_contract_path = '/Distributor/Contracts/show/cnumber/';   //合同展示路径
     private $_contract_pdf_path = 'http://ssq.mankkk.cn/pdf/';   //合同展示路径
+    private $_contract_reback_host = 'http://ssq.mankkk.cn/api/contract/reback';   //合同手签回调地址
     private static $_instances;
     private $_default_user_agent = '';
     private $_response_headers = '';
@@ -805,34 +806,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		var_dump($arrs);
 
 	}
-	
-	//手动签署单文件合同(游客)
-	function sendContract()
-	{	
-		$path = "/contract/send/";
-        //post data
-		$fid = "4761274319626032401";  //合同对应的合同文件
-		$filepath = './'.$fid.'.pdf';
-		$pagenum = $this->getPageTotal($filepath);
-	    $arr['pageNum'] = $pagenum;
-		$arr['x'] = '0.7';
-		$arr['y'] = '0.5';
-        $post_data['contractId'] = '153924058501000001';
-		$post_data['signer'] = '612722199103133571';
-		$post_data['dpi'] = '120';
-		$post_data['isAllowChangeSignaturePosition'] = '1';
-		$post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
-		$post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
-		$post_data['sid'] = '';    					 //平台流水号
-		$post_data['pushUrl'] = '';    				 //平台接收回调地址，不填选默认
-		$post_data['signaturePositions'] = $arr; 
-		$jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
-		//var_dump($jsonStr);die;
-		$response = $this->basePara($path, $jsonStr, '', true);
-		$arrs = json_decode($response,true);
-		var_dump($arrs);
 
-	}
 	//得到合同签署者状态
     function getSignerStatus()
     {
@@ -929,36 +903,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		}
 		var_dump($arrss);
 	}
-	
-	//手动签署多文件合同(游客)
-	function sendCatalog()
-	{	
-		$path = "/catalog/send/";
-        //post data
-		$fid = "6663789385475722304";  //合同对应的合同文件
-		$filepath = './'.$fid.'.pdf';
-		$pagenum = $this->getPageTotal($filepath);
-	    $arr['pageNum'] = $pagenum;
-		$arr['pageNum'] = '1';
-		$arr['x'] = '0.7';
-		$arr['y'] = '0.5';
-        $post_data['catalogName'] = '测试多文件合同目录';
-		$post_data['signerAccount'] = '612722199103133571';
-		$post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
-		$post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
-		$post_data['contractParams']['测试22222222222']['signaturePositions'] = '-';
-		$post_data['contractParams']['测试3333']['signaturePositions'] = '|';
-		$temp = '['.json_encode($arr).']';
-		$str = json_encode($post_data);
-		$str = str_replace('"-"',$temp,$str);
-		$str = str_replace('"|"',$temp,$str);
-		$jsonStr = $str;  //提前处理为jsonArr格式
-		//var_dump($jsonStr);die;
-		$response = $this->basePara($path, $jsonStr, '', true);
-		$arrs = json_decode($response,true);
-		var_dump($arrs);
 
-	}
 	//得到多文件合同预览网址
 	function getCatalogView()
 	{	
@@ -1026,7 +971,6 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     //手动更新状态
     function changeStatus()
     {
-
         if(empty(input('param.c_number'))){
             $res['type'] = '0';
             $res['code'] = '10001';
@@ -1075,6 +1019,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     $res['type'] = '1';
                     $res['msg'] ='注册用户成功';
                     $dataObj->is_reg_user = 1;
+                    $dataObj->user_account = $identity;
                     $dataObj->save();
                 }
                 $res['data'] = $resArr;
@@ -1242,7 +1187,6 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         $dataInfo->is_create = 1;
                         $dataInfo->tra_status = 1;
                         $dataInfo->contract_status = 4;
-                        $dataInfo->customsId = $dataObj->unit_account.',';
                         $dataInfo->save();
                         $res['type'] = '1';
                         $res['msg'] = '自动盖章成功';
@@ -1271,7 +1215,6 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         $dataInfo->is_create = 1;
                         $dataInfo->tra_status = 1;
                         $dataInfo->contract_status = 4;
-                        $dataInfo->customsId = $dataObj->unit_account.',';
                         $dataInfo->save();
                         $res['type'] = '1';
                         $res['msg'] = '自动盖章成功';
@@ -1292,6 +1235,151 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
     }
 
+    //手动签署单文件合同(游客)
+    function sendContract()
+    {
+        $where['c_number'] = input('param.c_number');
+        $dataObj = ContractQueue::where($where)->find();
+
+        $path = "/contract/send/";
+        //post data
+        $fid = input('param.c_number');  //合同对应的合同文件
+        $filepath = './pdf/'.$fid.'.pdf';
+        $pagenum = $this->getPageTotal($filepath);
+        $arr['pageNum'] = $pagenum;
+        $arr['x'] = '0.7';
+        $arr['y'] = '0.5';
+        $post_data['contractId'] = $dataObj->contract_id;
+        $post_data['signer'] = $dataObj->user_account;
+        $post_data['dpi'] = '120';
+        $post_data['isAllowChangeSignaturePosition'] = '1';
+        $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
+        $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
+        $post_data['sid'] = input('param.c_number');    					 //平台流水号
+        $post_data['pushUrl'] = $this->_contract_reback_host;    				 //平台接收回调地址，不填选默认
+        $post_data['signaturePositions'] = $arr;
+        $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
+        $response = $this->basePara($path, $jsonStr, '', true);
+        $arrs = json_decode($response,true);
+        $res['type'] = '0';
+        $res['res'] = $response;
+        $res['msg'] = '请求失败，请重试';
+        if($arrs['errno']==0){
+            $res['type'] = '1';
+            $res['msg'] = '';
+            $data['pic'] ='http://pan.baidu.com/share/qrcode?w=200&h=200&url='.$arrs['data']['url'];
+            $data['url'] = $arrs['data']['url'];
+            $res['data'] = $data;
+        }
+        return json_encode($res);
+
+    }
+    //手动签署多文件合同(游客)
+    function sendCatalog()
+    {
+        $where['c_number'] = input('param.c_number');
+        $dataObj = ContractQueue::where($where)->find();
+        $path = "/catalog/send/";
+        $fid = input('param.c_number');  //合同对应的合同文件
+        $filepath = './pdf/'.$fid.'.pdf';
+        $pagenum = $this->getPageTotal($filepath);
+        $arr['pageNum'] = $pagenum;
+        $arr['x'] = '0.7';
+        $arr['y'] = '0.5';
+        $post_data['catalogName'] = $dataObj->contract_id;
+        $post_data['signerAccount'] = $dataObj->user_account;
+        $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
+        $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
+        $post_data['contractParams']['合同主体']['signaturePositions'] = '-';
+        $post_data['contractParams']['合同行程单']['signaturePositions'] = '|';
+        $temp = '['.json_encode($arr).']';
+        $str = json_encode($post_data);
+        $str = str_replace('"-"',$temp,$str);
+        $str = str_replace('"|"',$temp,$str);
+        $jsonStr = $str;  //提前处理为jsonArr格式
+        //var_dump($jsonStr);die;
+        $response = $this->basePara($path, $jsonStr, '', true);
+        $arrs = json_decode($response,true);
+        $res['type'] = '0';
+        $res['res'] = $response;
+        $res['msg'] = '请求失败，请重试';
+        if($arrs['errno']==0){
+            $res['type'] = '1';
+            $res['msg'] = '';
+            $data['pic'] ='http://pan.baidu.com/share/qrcode?w=200&h=200&url='.$arrs['data']['url'];
+            $data['url'] = $arrs['data']['url'];
+            $res['data'] = $data;
+        }
+        return json_encode($res);
+    }
+    //手签回调更新状态
+    function reback()
+    {
+
+        $where['c_number'] = input('param.c_number');
+        $dataInfo = ContractMode::where($where)->find();
+    }
+    //得到合同预览网址
+    function getShowUrl()
+    {
+        $where['c_number'] = input('param.c_number');
+        $dataObj = ContractQueue::where($where)->find();
+        if($dataObj->type==0){//订单合同
+            $path = "/catalog/getPreviewURL/";
+            //post data
+            $post_data['catalogName'] = $dataObj->contract_id;
+            $post_data['signerAccount'] = $dataObj->unit_account;
+            $post_data['dpi'] = '160';
+            $post_data['expireTime'] = '0';  //1个月后的时间戳
+            $response = $this->basePara($path, $post_data);
+        }else{
+            $path = "/contract/getPreviewURL/";
+            //post data
+            $post_data['contractId'] = $dataObj->contract_id;
+            $post_data['account'] = $dataObj->unit_account;
+            $post_data['dpi'] = '160';
+            $post_data['expireTime'] = '0';  //1个月后的时间戳
+            $response = $this->basePara($path, $post_data);
+        }
+        $arrs = json_decode($response,true);
+        $res['type'] = '0';
+        $res['res'] = $response;
+        $res['msg'] = '请求失败，请重试';
+        if($arrs['errno']==0){
+            $res['type'] = '1';
+            $res['msg'] = '';
+            $data['pic'] ='http://pan.baidu.com/share/qrcode?w=200&h=200&url='.$arrs['data']['url'];
+            $data['url'] = $arrs['data']['url'];
+            $res['data'] = $data;
+        }
+        return json_encode($res);
+    }
+
+    //下载合同
+    function downloads()
+    {
+        $where['c_number'] = input('param.c_number');
+        $dataObj = ContractQueue::where($where)->find();
+        if($dataObj->type==0){//订单合同
+
+        }else{
+            $path = "/storage/contract/download/";
+            $url_params['contractId'] = $dataObj->contract_id;
+            $response = $this->basePara($path, $url_params, 'GET');
+        }
+        $arrs = json_decode($response,true);
+        $res['type'] = '0';
+        $res['res'] = $response;
+        $res['msg'] = '请求失败，请重试';
+        if($arrs['errno']==0){
+            $res['type'] = '1';
+            $res['msg'] = '';
+            $data['pic'] ='http://pan.baidu.com/share/qrcode?w=200&h=200&url='.$arrs['data']['url'];
+            $data['url'] = $arrs['data']['url'];
+            $res['data'] = $data;
+        }
+        return json_encode($res);
+    }
     //
     function cs()
     {
