@@ -19,7 +19,7 @@ return [
     'default'	=>	[
         'type'	=>	'file',
         // 全局缓存有效期（0为永久有效）
-        'expire'=>  0,
+        'expire'=>  3600,
         // 缓存前缀
         'prefix'=>  'think',
         // 缓存目录
@@ -30,7 +30,7 @@ return [
         'host'	=>	'127.0.0.1',
         'port'   => '6379',
         // 全局缓存有效期（0为永久有效）
-        'expire'=>  0,
+        'expire'=>  3600,
         // 缓存前缀
         'prefix'=>  'think',
     ],
