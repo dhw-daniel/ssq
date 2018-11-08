@@ -1178,7 +1178,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     $post_data['description'] = "";
                     $res_create = $this->basePara($path, $post_data);
                     $create_arr = json_decode($res_create,true);
-                    //自由合同结束
+
                     if($create_arr['errno']==0||$create_arr['errno']==242008){ //生成目录成功
                         $path = "/catalog/uploadContract/";
                         //post data
@@ -1227,6 +1227,76 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 return json_encode($res);
             }
         }
+
+        if($dataObj->is_creat==1) {//自动签署
+            if(empty($boolSign)){
+                Cache::set('sign'.input('param.c_number'),'1');
+                $res['type'] = '0';
+                $res['msg'] = '自动盖章失败,请重试';
+                if($dataObj->type==0){//订单合同 即多文件合同
+                    $orderPath = "/catalog/getContracts/";
+                    //post data
+                    $order_post_data['catalogName'] = input('param.c_number');   //合同目录唯一标识
+                    $res_list = $this->basePara($orderPath, $order_post_data);
+                    $arrs = json_decode($res_list,true);
+                    $path = "/contract/sign/cert/";
+                    //post data
+
+                    $arr['pageNum'] = '1';
+                    $arr['x'] = '0.4';
+                    $arr['y'] = '0.5';
+                    $arr['rptPageNums'] = '0';
+                    $res_sign_bool = 1;
+                    foreach($arrs['data']['contracts'] as $k=>$v){
+                        $post_data['contractId'] = $v['contractId'];
+                        $post_data['signerAccount'] = $dataObj->unit_account;
+                        $post_data['signatureImageName'] = $post_data['signerAccount'];
+                        $post_data['signaturePositions'] = $arr;
+                        $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
+                        $reso_sign = $this->basePara($path, $jsonStr, '', true);
+                        $arrss[] = json_decode($reso_sign,true);
+                        $res_sign = json_encode($arrss);
+                        if(!($arrss[$k]['errno']==0||$arrss[$k]['errno']==242008)){
+                            $res_sign_bool = $res_sign_bool*0;
+                        }
+                    }
+                    if($res_sign_bool==1){ //盖章成功
+                        $dataObj->is_sign = 1;
+                        $dataObj->save();
+                        $res['type'] = '1';
+                        $res['msg'] = '自动盖章成功';
+                    }
+                }else{
+                    //自由合同开始
+                    $path = "/storage/contract/sign/cert/";
+                    //post data
+                    $arr = array();
+                    $arr['pageNum'] = '1';
+                    $arr['x'] = '0.4';
+                    $arr['y'] = '0.5';
+                    $arr['rptPageNums'] = '0';
+                    $post_data['contractId'] = $dataObj->contract_id;
+                    $post_data['signer'] = $dataObj->unit_account;
+                    $post_data['signatureImageName'] = $post_data['signer'];
+                    $post_data['signaturePositions'] = $arr;
+                    $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
+                    $res_sign = $this->basePara($path, $jsonStr, '', true);
+                    $sign_arr = json_decode($res_sign,true);
+                    //自由合同结束
+                    if($sign_arr['errno']==0){ //盖章成功
+                        $dataObj->is_sign = 1;
+                        $dataObj->save();
+                        $res['type'] = '1';
+                        $res['msg'] = '自动盖章成功';
+                    }
+                }
+
+                Cache::rm('sign'.input('param.c_number'));
+                $res['code'] = '10006';
+                $res['data'] = $res_sign;
+                return json_encode($res);
+            }
+        }
         $res['type'] = '0';
         $res['code'] = '10000';
         $res['data'] = '';
@@ -1238,30 +1308,21 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     //
     function cs()
     {
-        $path = "/catalog/create/";
+        Cache::clear();
+        $path = "/storage/contract/sign/cert/";
         //post data
-        $post_data['senderAccount'] = '510231196811155237';
-        $post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
-        $post_data['catalogName'] = "ccc";
-        $post_data['description'] = "";
-        $res_create = $this->basePara($path, $post_data);
-        $create_arr = json_decode($res_create,true);
-
-        if($create_arr['errno']==0||$create_arr['errno']==242008){ //生成目录成功
-            $path = "/catalog/uploadContract/";
-            //post data
-            $post_data_add['senderAccount'] = '510231196811155237';
-            $post_data_add['catalogName'] = "ccc";   //合同目录唯一标识
-            $post_data_add['fid'] = '4305043862222143820';
-            $post_data_add['title'] = "合同主体";
-            $file_add_one = $this->basePara($path, $post_data_add);
-            $post_data_add['fid'] = '658488541325095046';
-            $post_data_add['title'] = "合同行程单";
-            $file_add_two = $this->basePara($path, $post_data_add);
-            $create_arr_one = json_decode($file_add_one,true);
-            $create_arr_two = json_decode($file_add_two,true);
-            var_dump($create_arr_one);
-            var_dump($create_arr_two);
-        }
+        $arr = array();
+        $arr['pageNum'] = '1';
+        $arr['x'] = '0.4';
+        $arr['y'] = '0.5';
+        $arr['rptPageNums'] = '0';
+        $post_data['contractId'] = $dataObj->contract_id;
+        $post_data['signer'] = $dataObj->unit_account;
+        $post_data['signatureImageName'] = $post_data['signer'];
+        $post_data['signaturePositions'] = $arr;
+        $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
+        $res_sign = $this->basePara($path, $jsonStr, '', true);
+        $sign_arr = json_decode($res_sign,true);
+        var_dump($sign_arr);
     }
 }
