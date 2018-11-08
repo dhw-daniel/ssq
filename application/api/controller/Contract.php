@@ -1247,6 +1247,10 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $filepath = './pdf/'.$fid.'.pdf';
         $pagenum = $this->getPageTotal($filepath);
         $arr['pageNum'] = $pagenum;
+        if(!$pagenum){
+            $arr['rptPageNums'] = '0';
+            $arr['pageNum'] = '1';
+        }
         $arr['x'] = '0.7';
         $arr['y'] = '0.5';
         $post_data['contractId'] = $dataObj->contract_id;
@@ -1284,6 +1288,10 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $filepath = './pdf/'.$fid.'.pdf';
         $pagenum = $this->getPageTotal($filepath);
         $arr['pageNum'] = $pagenum;
+        if(!$pagenum){
+            $arr['rptPageNums'] = '0';
+            $arr['pageNum'] = '1';
+        }
         $arr['x'] = '0.7';
         $arr['y'] = '0.5';
         $post_data['catalogName'] = $dataObj->contract_id;
