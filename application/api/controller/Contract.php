@@ -1265,6 +1265,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
         $response = $this->basePara($path, $jsonStr, '', true);
         $arrs = json_decode($response,true);
+        $res['file_page'] = $pagenum;
         $res['type'] = '0';
         $res['res'] = $response;
         $res['msg'] = '请求失败，请重试';
@@ -1308,6 +1309,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         //var_dump($jsonStr);die;
         $response = $this->basePara($path, $jsonStr, '', true);
         $arrs = json_decode($response,true);
+        $res['file_page'] = $pagenum;
         $res['type'] = '0';
         $res['res'] = $response;
         $res['msg'] = '请求失败，请重试';
@@ -1323,9 +1325,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     //手签回调更新状态
     function reback()
     {
-
-        $where['c_number'] = input('param.c_number');
-        $dataInfo = ContractMode::where($where)->find();
+        return 1;
     }
     //得到合同预览网址
     function getShowUrl()
