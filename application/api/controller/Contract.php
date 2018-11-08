@@ -11,6 +11,7 @@ namespace app\api\controller;
 use think\Controller;
 use think\facade\Cache;
 use app\api\model\ContractQueue;
+use app\api\model\Contract as ContractMode;
 class Contract extends Controller{
     private $_developerId = '2091829019505852963';
     private $_pem = '-----BEGIN RSA PRIVATE KEY-----
@@ -987,33 +988,6 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		var_dump($arr);
 
 	}
-
-    //生成自由合同
-    function createFreeContract()
-    {
-        //注册合同游客用户
-
-        //上传合同文件
-
-        //创建合同
-
-        //自动签署
-
-    }
-    //生成订单合同
-    function createOrderContract()
-    {
-        //注册合同游客用户
-
-        //上传合同文件
-
-        //创建合同目录
-
-        //向合同目录添加文件
-
-        //自动签署
-
-    }
     //上传doc ，docx, pdf并转为pdf
     function upFileToPdf($file_name, $file_path, $account)
     {
@@ -1062,6 +1036,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         }
         $where['c_number'] = input('param.c_number');
         $dataObj = ContractQueue::where($where)->find();
+        $dataInfo = ContractMode::where($where)->find();
         if(empty($dataObj)){
             $res['type'] = '0';
             $res['code'] = '10002';
@@ -1256,13 +1231,19 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         $reso_sign = $this->basePara($path, $jsonStr, '', true);
                         $arrss[] = json_decode($reso_sign,true);
                         $res_sign = json_encode($arrss);
-                        if(!($arrss[$k]['errno']==0||$arrss[$k]['errno']==242008)){
+                        if(!($arrss[$k]['errno']==0||$arrss[$k]['errno']==241424)){
                             $res_sign_bool = $res_sign_bool*0;
                         }
                     }
                     if($res_sign_bool==1){ //盖章成功
                         $dataObj->is_sign = 1;
                         $dataObj->save();
+                        //更新合同状态
+                        $dataInfo->is_create = 1;
+                        $dataInfo->tra_status = 1;
+                        $dataInfo->contract_status = 4;
+                        $dataInfo->customsId = $dataObj->unit_account.',';
+                        $dataInfo->save();
                         $res['type'] = '1';
                         $res['msg'] = '自动盖章成功';
                     }
@@ -1283,9 +1264,15 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     $res_sign = $this->basePara($path, $jsonStr, '', true);
                     $sign_arr = json_decode($res_sign,true);
                     //自由合同结束
-                    if($sign_arr['errno']==0){ //盖章成功
+                    if($sign_arr['errno']==0||$sign_arr['errno']==241424){ //盖章成功
                         $dataObj->is_sign = 1;
                         $dataObj->save();
+                        //更新合同状态
+                        $dataInfo->is_create = 1;
+                        $dataInfo->tra_status = 1;
+                        $dataInfo->contract_status = 4;
+                        $dataInfo->customsId = $dataObj->unit_account.',';
+                        $dataInfo->save();
                         $res['type'] = '1';
                         $res['msg'] = '自动盖章成功';
                     }
@@ -1309,20 +1296,5 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     function cs()
     {
         Cache::clear();
-        $path = "/storage/contract/sign/cert/";
-        //post data
-        $arr = array();
-        $arr['pageNum'] = '1';
-        $arr['x'] = '0.4';
-        $arr['y'] = '0.5';
-        $arr['rptPageNums'] = '0';
-        $post_data['contractId'] = $dataObj->contract_id;
-        $post_data['signer'] = $dataObj->unit_account;
-        $post_data['signatureImageName'] = $post_data['signer'];
-        $post_data['signaturePositions'] = $arr;
-        $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
-        $res_sign = $this->basePara($path, $jsonStr, '', true);
-        $sign_arr = json_decode($res_sign,true);
-        var_dump($sign_arr);
     }
 }
