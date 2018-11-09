@@ -1363,8 +1363,26 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         return json_encode($res);
     }
 
+    //得到当前合同状态
+    function getStatus()
+    {
+        $where['c_number'] = input('param.c_number');
+        $dataObj = ContractQueue::where($where)->find();
+        $res['type'] = '1';
+        $res['msg'] = '';
+        $data['is_reg_user'] =$dataObj->is_reg_user;
+        $data['is_upload'] =$dataObj->is_upload;
+        $data['is_creat'] =$dataObj->is_creat;
+        $data['is_sign'] =$dataObj->is_sign;
+        $data['is_sign_two'] =$dataObj->is_sign_two;
+        $data['is_lock'] =$dataObj->is_lock;
+        $data['is_cancel'] =$dataObj->is_cancel;
+        $res['data'] = $data;
+        return json_encode($res);
+    }
+
     //下载合同
-    function downloads()
+    function downloadsUrl()
     {
         $where['c_number'] = input('param.c_number');
         $dataObj = ContractQueue::where($where)->find();
@@ -1375,18 +1393,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $url_params['contractId'] = $dataObj->contract_id;
             $response = $this->basePara($path, $url_params, 'GET');
         }
-        $arrs = json_decode($response,true);
-        $res['type'] = '0';
-        $res['res'] = $response;
-        $res['msg'] = '请求失败，请重试';
-        if($arrs['errno']==0){
-            $res['type'] = '1';
-            $res['msg'] = '';
-            $data['pic'] ='http://pan.baidu.com/share/qrcode?w=200&h=200&url='.$arrs['data']['url'];
-            $data['url'] = $arrs['data']['url'];
-            $res['data'] = $data;
-        }
-        return json_encode($res);
+        return $response;
     }
     //
     function cs()
