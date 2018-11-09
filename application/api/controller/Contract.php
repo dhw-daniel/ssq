@@ -976,7 +976,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $res['code'] = '10001';
             $res['data'] = input('param');
             $res['msg'] = '参数缺失';
-            return json_encode($res);
+            return json($res);
         }
         $where['c_number'] = input('param.c_number');
         $dataObj = ContractQueue::where($where)->find();
@@ -986,7 +986,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $res['code'] = '10002';
             $res['data'] = $dataObj;
             $res['msg'] = '找不到数据';
-            return json_encode($res);
+            return json($res);
         }
         $boolReg = Cache::get('reg'.input('param.c_number'));  //注册用户
         $boolUp = Cache::get('up'.input('param.c_number'));    //上传文件
@@ -1024,7 +1024,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 }
                 $res['data'] = $resArr;
                 $res['code'] = $resArr['cost'];
-                return json_encode($res);
+                return json($res);
             }
         }
 
@@ -1043,7 +1043,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         $res['data'] = $shell;
                         $res['code'] = '10003';
                         $res['msg'] = '生成合同主体文件失败';
-                        return json_encode($res);
+                        return json($res);
                     }
                     //上传合同主体文件开始
                     $file_name = input('param.c_number').'.pdf';
@@ -1080,7 +1080,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 Cache::rm('up'.input('param.c_number'));
                 $res['code'] = '10004';
                 $res['data'] = $file_res;
-                return json_encode($res);
+                return json($res);
             }
         }
 
@@ -1144,7 +1144,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 Cache::rm('create'.input('param.c_number'));
                 $res['code'] = '10005';
                 $res['data'] = $res_create;
-                return json_encode($res);
+                return json($res);
             }
         }
 
@@ -1224,14 +1224,14 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 Cache::rm('sign'.input('param.c_number'));
                 $res['code'] = '10006';
                 $res['data'] = $res_sign;
-                return json_encode($res);
+                return json($res);
             }
         }
         $res['type'] = '0';
         $res['code'] = '10000';
         $res['data'] = '';
         $res['msg'] = '任务正在处理中，请稍后';
-        return json_encode($res);
+        return json($res);
 
     }
 
@@ -1276,7 +1276,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
-        return json_encode($res);
+        return json($res);
 
     }
     //手动签署多文件合同(游客)
@@ -1320,7 +1320,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
-        return json_encode($res);
+        return json($res);
     }
     //手签回调更新状态
     function reback()
@@ -1360,7 +1360,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
-        return json_encode($res);
+        return json($res);
     }
 
     //得到当前合同状态
@@ -1378,7 +1378,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $data['is_lock'] =$dataObj->is_lock;
         $data['is_cancel'] =$dataObj->is_cancel;
         $res['data'] = $data;
-        return json_encode($res);
+        return json($res);
     }
 
     //下载合同
