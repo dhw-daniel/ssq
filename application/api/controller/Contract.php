@@ -1272,7 +1272,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         if($arrs['errno']==0){
             $res['type'] = '1';
             $res['msg'] = '';
-            $data['pic'] ='http://qr.liantu.com/api.php?el=l&w=200&m=10&text='.$arrs['data']['url'];
+            $data['pic'] ='http://bshare.optimix.asia/barCode?site=weixin&url='.$arrs['data']['url'];
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
@@ -1316,7 +1316,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         if($arrs['errno']==0){
             $res['type'] = '1';
             $res['msg'] = '';
-            $data['pic'] ='http://qr.liantu.com/api.php?el=l&w=200&m=10&text='.$arrs['data']['url'];
+            $data['pic'] ='http://bshare.optimix.asia/barCode?site=weixin&url='.$arrs['data']['url'];
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
@@ -1356,7 +1356,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         if($arrs['errno']==0){
             $res['type'] = '1';
             $res['msg'] = '';
-            $data['pic'] ='http://qr.liantu.com/api.php?el=l&w=200&m=10&text='.$arrs['data']['url'];
+            $data['pic'] ='http://bshare.optimix.asia/barCode?site=weixin&url='.$arrs['data']['url'];
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
