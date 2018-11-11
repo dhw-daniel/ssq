@@ -22,6 +22,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     private $_contract_path = '/Distributor/Contracts/show/cnumber/';   //合同展示路径
     private $_contract_pdf_path = 'http://ssq.mankkk.cn/pdf/';   //合同展示路径
     private $_contract_reback_host = 'http://ssq.mankkk.cn/api/contract/reback';   //合同手签回调地址
+	private $_contract_reshow_host = 'http://ssq.mankkk.cn/api/contract/reshow';   //合同手签跳转地址
     private static $_instances;
     private $_default_user_agent = '';
     private $_response_headers = '';
@@ -1255,6 +1256,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $arr['y'] = '0.5';
         $post_data['contractId'] = $dataObj->contract_id;
         $post_data['signer'] = $dataObj->user_account;
+		$post_data['returnUrl'] = $this->_contract_reshow_host;
         $post_data['dpi'] = '120';
         $post_data['isAllowChangeSignaturePosition'] = '1';
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
@@ -1297,6 +1299,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $arr['y'] = '0.5';
         $post_data['catalogName'] = $dataObj->contract_id;
         $post_data['signerAccount'] = $dataObj->user_account;
+		$post_data['returnUrl'] = $this->_contract_reshow_host;
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
         $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
         $post_data['contractParams']['合同主体']['signaturePositions'] = '-';
@@ -1380,7 +1383,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $res['data'] = $data;
         return json($res);
     }
-
+	
     //下载合同
     function downloadsUrl()
     {
@@ -1394,6 +1397,40 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $response = $this->basePara($path, $url_params, 'GET');
         }
         return $response;
+    }
+	
+    //签约成功更新状态并跳转
+    function reshow()
+    {
+        $where['c_number'] = input('param.c_number');
+        $dataObj = ContractQueue::where($where)->find();
+        $dataInfo = ContractMode::where($where)->find();
+		
+		$dataObj->is_sign_two = 1;
+		$dataObj->save();
+		//更新合同状态
+		$dataInfo->contract_status = 5;
+		$dataInfo->user_status = 1;
+		$dataInfo->save();
+        if($dataObj->type==0){//订单合同
+            $path = "/catalog/getPreviewURL/";
+            //post data
+            $post_data['catalogName'] = $dataObj->contract_id;
+            $post_data['signerAccount'] = $dataObj->unit_account;
+            $post_data['dpi'] = '160';
+            $post_data['expireTime'] = '0';  //1个月后的时间戳
+            $response = $this->basePara($path, $post_data);
+        }else{
+            $path = "/contract/getPreviewURL/";
+            //post data
+            $post_data['contractId'] = $dataObj->contract_id;
+            $post_data['account'] = $dataObj->unit_account;
+            $post_data['dpi'] = '160';
+            $post_data['expireTime'] = '0';  //1个月后的时间戳
+            $response = $this->basePara($path, $post_data);
+        }
+        $arrs = json_decode($response,true);
+		return redirect($arrs['data']['url']);
     }
     //
     function cs()
