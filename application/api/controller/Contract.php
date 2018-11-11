@@ -1295,6 +1295,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $arr['rptPageNums'] = '0';
             $arr['pageNum'] = '1';
         }
+		$arr['pageNum'] = '1';
         $arr['x'] = '0.7';
         $arr['y'] = '0.5';
         $post_data['catalogName'] = $dataObj->contract_id;
