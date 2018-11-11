@@ -1256,7 +1256,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $arr['y'] = '0.5';
         $post_data['contractId'] = $dataObj->contract_id;
         $post_data['signer'] = $dataObj->user_account;
-		$post_data['returnUrl'] = $this->_contract_reshow_host;
+		$post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.input('param.c_number');
         $post_data['dpi'] = '120';
         $post_data['isAllowChangeSignaturePosition'] = '1';
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
@@ -1299,7 +1299,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $arr['y'] = '0.5';
         $post_data['catalogName'] = $dataObj->contract_id;
         $post_data['signerAccount'] = $dataObj->user_account;
-		$post_data['returnUrl'] = $this->_contract_reshow_host;
+		$post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.input('param.c_number');
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
         $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
         $post_data['contractParams']['合同主体']['signaturePositions'] = '-';
