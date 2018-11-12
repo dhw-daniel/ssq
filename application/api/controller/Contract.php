@@ -1387,13 +1387,36 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $where['c_number'] = input('param.c_number');
         $dataObj = ContractQueue::where($where)->find();
         if($dataObj->type==0){//订单合同
-
+            $path = "/catalog/getContracts/";  //得到合同列表
+            //post data
+            $post_data['catalogName'] = $dataObj->contract_id;   //合同目录唯一标识
+            $response = $this->basePara($path, $post_data);
+            $arrs = json_decode($response,true);
+            if($arrs['errno']==0){
+                foreach ($arrs['errno']['data']['contracts'] as $k=>$v){
+                    $path = "/storage/contract/download/";
+                    $url_params['contractId'] = $v['contractId'];
+                    $response = $this->basePara($path, $url_params, 'GET');
+                    $file_path = './pdf/';
+                    $file_name = 'd_'.input('param.c_number').'_'.$k.'.pdf';
+                    file_put_contents($file_path.$file_name,$response);
+                    $url[] = $this->_contract_pdf_path.$file_name;
+                }
+            }
         }else{
             $path = "/storage/contract/download/";
             $url_params['contractId'] = $dataObj->contract_id;
             $response = $this->basePara($path, $url_params, 'GET');
+            $file_path = './pdf/';
+            $file_name = 'd_'.input('param.c_number').'_1.pdf';
+            file_put_contents($file_path.$file_name,$response);
+            $url[] = $this->_contract_pdf_path.$file_name;
         }
-        return $response;
+        $res['type'] = '1';
+        $res['msg'] = '';
+        $data['url'] = $url;
+        $res['data'] = $data;
+        return json($res);
     }
     //
     function cs()
