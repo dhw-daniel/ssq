@@ -831,7 +831,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     {
         $path = "/storage/contract/lock/";
 
-        $url_params['contractId'] = '153924058501000001';
+        $url_params['contractId'] = '154164502101000001';
 		$response = $this->basePara($path, $url_params);
         return $response;
     }	
@@ -989,13 +989,13 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $res['msg'] = '找不到数据';
             return json($res);
         }
-        $boolReg = Cache::get('reg'.input('param.c_number'));  //注册用户
-        $boolUp = Cache::get('up'.input('param.c_number'));    //上传文件
-        $boolCreate = Cache::get('create'.input('param.c_number'));    //生成合同
-        $boolSign = Cache::get('sign'.input('param.c_number'));    //自动签署
+        $boolReg = Cache::get('reg'.$dataObj->c_number);  //注册用户
+        $boolUp = Cache::get('up'.$dataObj->c_number);    //上传文件
+        $boolCreate = Cache::get('create'.$dataObj->c_number);    //生成合同
+        $boolSign = Cache::get('sign'.$dataObj->c_number);    //自动签署
         if($dataObj->is_reg_user==0){//注册用户
             if(empty($boolReg)){
-                Cache::set('reg'.input('param.c_number'),'1');
+                Cache::set('reg'.$dataObj->c_number,'1');
                 $mail = $dataObj->user_info->mail;
                 $identity = $dataObj->user_info->identity;
                 $account = $identity;
@@ -1004,7 +1004,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 $user_type = "1";
 
                 $credential['identity'] = $identity;
-                $credential['identityType'] = '0';
+                $credential['identityType'] = $dataObj->account_type;
                 $credential['contactMobile'] = '';
                 $credential['contactMail'] = $mail;
                 $credential['province']= '';
@@ -1012,7 +1012,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                 $credential['address'] = '';
                 $applyCert = '1';
                 $response = $this->regBaseUser($account, $mail, $mobile, $name, $user_type, $credential, $applyCert);
-                Cache::rm('reg'.input('param.c_number'));
+                Cache::rm('reg'.$dataObj->c_number);
                 $resArr = json_decode($response,true);
                 $res['type'] = '0';
                 $res['msg'] = '注册用户失败,请重试';
@@ -1031,15 +1031,15 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
         if($dataObj->is_upload==0){//上传文件
             if(empty($boolUp)){
-                Cache::set('up'.input('param.c_number'),'1');
+                Cache::set('up'.$dataObj->c_number,'1');
                 $res['type'] = '0';
                 $res['msg'] = '上传文件失败,请重试';
                 if($dataObj->ssq_fid_one=='0'){
                     $base_dir = './pdf';
-                    $shell = 'wkhtmltopdf '.$this->_contract_host.$this->_contract_path.input('param.c_number').' '.$base_dir.'/'.input('param.c_number').'.pdf';
+                    $shell = 'wkhtmltopdf '.$this->_contract_host.$this->_contract_path.$dataObj->c_number.' '.$base_dir.'/'.$dataObj->c_number.'.pdf';
                     system($shell, $status);//本地生成合同主体pdf
                     if($status){ //执行失败
-                        Cache::rm('up'.input('param.c_number'));
+                        Cache::rm('up'.$dataObj->c_number);
                         $res['type'] = '0';
                         $res['data'] = $shell;
                         $res['code'] = '10003';
@@ -1047,7 +1047,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         return json($res);
                     }
                     //上传合同主体文件开始
-                    $file_name = input('param.c_number').'.pdf';
+                    $file_name = $dataObj->c_number.'.pdf';
                     $file_path = $this->_contract_pdf_path.$file_name;
                     $file_res = $this->upFileToPdf($file_name,$file_path,$dataObj->unit_account);  //上传合同主体文件
                     $file_res_arr = json_decode($file_res,true);
@@ -1078,7 +1078,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     }
                     //上传合同行程文件结束
                 }
-                Cache::rm('up'.input('param.c_number'));
+                Cache::rm('up'.$dataObj->c_number);
                 $res['code'] = '10004';
                 $res['data'] = $file_res;
                 return json($res);
@@ -1087,7 +1087,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
         if($dataObj->is_upload==1 && $dataObj->is_creat==0){//生成合同
             if(empty($boolCreate)){
-                Cache::set('create'.input('param.c_number'),'1');
+                Cache::set('create'.$dataObj->c_number,'1');
                 $res['type'] = '0';
                 $res['msg'] = '生成合同失败,请重试';
                 if($dataObj->type==0){//订单合同 即多文件合同
@@ -1095,7 +1095,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     //post data
                     $post_data['senderAccount'] = $dataObj->unit_account;
                     $post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
-                    $post_data['catalogName'] = input('param.c_number');
+                    $post_data['catalogName'] = $dataObj->c_number;
                     $post_data['description'] = "";
                     $res_create = $this->basePara($path, $post_data);
                     $create_arr = json_decode($res_create,true);
@@ -1104,7 +1104,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         $path = "/catalog/uploadContract/";
                         //post data
                         $post_data_add['senderAccount'] = $dataObj->unit_account;
-                        $post_data_add['catalogName'] = input('param.c_number');   //合同目录唯一标识
+                        $post_data_add['catalogName'] = $dataObj->c_number;   //合同目录唯一标识
                         $post_data_add['fid'] = $dataObj->ssq_fid_one;
                         $post_data_add['title'] = "合同主体";
                         $file_add_one = $this->basePara($path, $post_data_add);
@@ -1115,7 +1115,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         $create_arr_two = json_decode($file_add_two,true);
                         if(($create_arr_one['errno']==0||$create_arr_one['errno']==242008)&&($create_arr_two['errno']==0||$create_arr_two['errno']==242008)){ //生成成功
                             $dataObj->is_creat = 1;
-                            $dataObj->contract_id = input('param.c_number');
+                            $dataObj->contract_id = $dataObj->c_number;
                             $dataObj->save();
                             $res['type'] = '1';
                             $res['msg'] = '生成合同成功';
@@ -1142,7 +1142,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                         $res['msg'] = '生成合同成功';
                     }
                 }
-                Cache::rm('create'.input('param.c_number'));
+                Cache::rm('create'.$dataObj->c_number);
                 $res['code'] = '10005';
                 $res['data'] = $res_create;
                 return json($res);
@@ -1151,13 +1151,13 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
         if($dataObj->is_creat==1) {//自动签署
             if(empty($boolSign)){
-                Cache::set('sign'.input('param.c_number'),'1');
+                Cache::set('sign'.$dataObj->c_number,'1');
                 $res['type'] = '0';
                 $res['msg'] = '自动盖章失败,请重试';
                 if($dataObj->type==0){//订单合同 即多文件合同
                     $orderPath = "/catalog/getContracts/";
                     //post data
-                    $order_post_data['catalogName'] = input('param.c_number');   //合同目录唯一标识
+                    $order_post_data['catalogName'] = $dataObj->c_number;   //合同目录唯一标识
                     $res_list = $this->basePara($orderPath, $order_post_data);
                     $arrs = json_decode($res_list,true);
                     $path = "/contract/sign/cert/";
@@ -1222,7 +1222,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     }
                 }
 
-                Cache::rm('sign'.input('param.c_number'));
+                Cache::rm('sign'.$dataObj->c_number);
                 $res['code'] = '10006';
                 $res['data'] = $res_sign;
                 return json($res);
@@ -1244,7 +1244,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
         $path = "/contract/send/";
         //post data
-        $fid = input('param.c_number');  //合同对应的合同文件
+        $fid = $dataObj->c_number;  //合同对应的合同文件
         $filepath = './pdf/'.$fid.'.pdf';
         $pagenum = $this->getPageTotal($filepath);
         $arr['pageNum'] = $pagenum;
@@ -1256,12 +1256,12 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $arr['y'] = '0.5';
         $post_data['contractId'] = $dataObj->contract_id;
         $post_data['signer'] = $dataObj->user_account;
-        $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.input('param.c_number');
+        $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.$dataObj->c_number;
         $post_data['dpi'] = '120';
         $post_data['isAllowChangeSignaturePosition'] = '1';
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
         $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
-        $post_data['sid'] = input('param.c_number');    					 //平台流水号
+        $post_data['sid'] = $dataObj->c_number;    					 //平台流水号
         $post_data['pushUrl'] = $this->_contract_reback_host;    				 //平台接收回调地址，不填选默认
         $post_data['signaturePositions'] = $arr;
         $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
@@ -1287,7 +1287,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $where['c_number'] = input('param.c_number');
         $dataObj = ContractQueue::where($where)->find();
         $path = "/catalog/send/";
-        $fid = input('param.c_number');  //合同对应的合同文件
+        $fid = $dataObj->c_number;  //合同对应的合同文件
         $filepath = './pdf/'.$fid.'.pdf';
         $pagenum = $this->getPageTotal($filepath);
         $arr['pageNum'] = $pagenum;
@@ -1300,7 +1300,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $arr['y'] = '0.5';
         $post_data['catalogName'] = $dataObj->contract_id;
         $post_data['signerAccount'] = $dataObj->user_account;
-        $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.input('param.c_number');
+        $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.$dataObj->c_number;
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
         $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
         $post_data['contractParams']['合同主体']['signaturePositions'] = '-';
@@ -1398,14 +1398,17 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $response = $this->basePara($path, $post_data);
             $arrs = json_decode($response,true);
             if($arrs['errno']==0){
-                foreach ($arrs['errno']['data']['contracts'] as $k=>$v){
+                $num = 0;
+                foreach ($arrs['data']['contracts'] as $k=>$v){
                     $path = "/storage/contract/download/";
                     $url_params['contractId'] = $v['contractId'];
                     $response = $this->basePara($path, $url_params, 'GET');
                     $file_path = './pdf/';
-                    $file_name = 'd_'.input('param.c_number').'_'.$k.'.pdf';
+                    $file_name = 'd_'.$dataObj->c_number.'_'.$num.'.pdf';
                     file_put_contents($file_path.$file_name,$response);
+                    $num+=1;
                     $url[] = $this->_contract_pdf_path.$file_name;
+                    $title[] = $k;
                 }
             }
         }else{
@@ -1413,13 +1416,15 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $url_params['contractId'] = $dataObj->contract_id;
             $response = $this->basePara($path, $url_params, 'GET');
             $file_path = './pdf/';
-            $file_name = 'd_'.input('param.c_number').'_1.pdf';
+            $file_name = 'd_'.$dataObj->c_number.'_1.pdf';
             file_put_contents($file_path.$file_name,$response);
             $url[] = $this->_contract_pdf_path.$file_name;
+            $title[] = '合同主体';
         }
         $res['type'] = '1';
         $res['msg'] = '';
         $data['url'] = $url;
+        $data['title'] = $title;
         $res['data'] = $data;
         return json($res);
     }
@@ -1457,9 +1462,387 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $arrs = json_decode($response,true);
 		return redirect($arrs['data']['url']);
     }
+
+    //定时注册用户
+    function conReg()
+    {
+        set_time_limit(0);
+        $bool =0;
+        $id = 1;
+        while($bool<=5) {
+            $where[] = ['cq_id','>',$id];
+            $where[] = ['is_reg_user','=',0];
+            $dataObj = ContractQueue::where($where)->find();
+            if(empty($dataObj)){
+                $res['type'] = '0';
+                $res['code'] = '20000';
+                $res['bool'] = $bool;
+                $res['msg'] = '找不到数据';
+                return json($res);
+            }
+            $boolReg = Cache::get('reg'.$dataObj->c_number);  //注册用户
+            if(empty($boolReg)){
+                Cache::set('reg'.$dataObj->c_number,'1');
+                $mail = $dataObj->user_info->mail;
+                $identity = $dataObj->user_info->identity;
+                $account = $identity;
+                $mobile = $dataObj->user_info->mobile;
+                $name = $dataObj->user_info->name;
+                $user_type = "1";    //个人
+
+                $credential['identity'] = $identity;
+                $credential['identityType'] = $dataObj->account_type;   //证件类型
+                $credential['contactMobile'] = '';
+                $credential['contactMail'] = $mail;
+                $credential['province']= '';
+                $credential['city'] = '';
+                $credential['address'] = '';
+                $applyCert = '1';
+                $response = $this->regBaseUser($account, $mail, $mobile, $name, $user_type, $credential, $applyCert);
+                $resArr = json_decode($response,true);
+                if($resArr['errno']==0){//用户注册成功
+                    $res['type'] = '1';
+                    $res['msg'] ='注册用户成功';
+                    $dataObj->is_reg_user = 1;
+                    $dataObj->user_account = $identity;
+                    $dataObj->save();
+                }else{
+                    $id = $dataObj->cq_id;
+                    $bool+=1;
+                }
+                Cache::rm('reg'.$dataObj->c_number);
+            }else{
+                $id = $dataObj->cq_id;
+                $bool+=1;
+            }
+        }
+    }
+    //定时上传文件
+    function conUp()
+    {
+        set_time_limit(0);
+        $bool =0;
+        $id = 1;
+        while($bool<=5) {
+            $where[] = ['cq_id','>',$id];
+            $where[] = ['is_upload','=',0];
+            $where[] = ['is_reg_user','=',1];
+            $dataObj = ContractQueue::where($where)->find();
+            if(empty($dataObj)){
+                $res['type'] = '0';
+                $res['code'] = '20000';
+                $res['bool'] = $bool;
+                $res['msg'] = '找不到数据';
+                return json($res);
+            }
+            $boolUp = Cache::get('up'.$dataObj->c_number);    //上传文件
+            if(empty($boolUp)){
+                Cache::set('up'.$dataObj->c_number,'1');
+                $res['type'] = '0';
+                $res['msg'] = '上传文件失败,请重试';
+                if($dataObj->ssq_fid_one=='0'){
+                    $base_dir = './pdf';
+                    $shell = 'wkhtmltopdf '.$this->_contract_host.$this->_contract_path.$dataObj->c_number.' '.$base_dir.'/'.$dataObj->c_number.'.pdf';
+                    system($shell, $status);//本地生成合同主体pdf
+                    if($status){ //执行失败
+                        Cache::rm('up'.$dataObj->c_number);
+                    }else{
+                        Cache::rm('up'.$dataObj->c_number);
+                        return 1;
+                    }
+                    //上传合同主体文件开始
+                    $file_name = $dataObj->c_number.'.pdf';
+                    $file_path = $this->_contract_pdf_path.$file_name;
+                    $file_res = $this->upFileToPdf($file_name,$file_path,$dataObj->unit_account);  //上传合同主体文件
+                    $file_res_arr = json_decode($file_res,true);
+
+                    if($file_res_arr['errno']==0){ //上传成功
+                        $dataObj->ssq_fid_one = $file_res_arr['data']['fid'];
+                        $dataObj->is_upload = $dataObj->type;     //自由合同type 值为1
+                        $dataObj->save();
+                    }else{
+                        $id = $dataObj->cq_id;
+                        $bool+=1;
+                    }
+                    //上传合同主体文件结束
+                }
+
+                if($dataObj->type==0&&$dataObj->ssq_fid_two=='0'){//订单合同 即多文件合同
+                    //上传合同行程文件开始
+                    $file_name = substr($dataObj->line_file_path,strripos($dataObj->line_file_path,"/")+1);
+                    $file_path = $dataObj->line_file_path;
+                    $file_res = $this->upFileToPdf($file_name,$file_path,$dataObj->unit_account);  //上传合同主体文件
+                    $file_res_arr = json_decode($file_res,true);
+                    if($file_res_arr['errno']==0){ //上传成功
+                        $dataObj->ssq_fid_two = $file_res_arr['data']['fid'];
+                        $dataObj->is_upload = 1;
+                        $dataObj->save();
+                    }else{
+                        $id = $dataObj->cq_id;
+                        $bool+=1;
+                    }
+                    //上传合同行程文件结束
+                }
+                Cache::rm('up'.$dataObj->c_number);
+            }else{
+                $id = $dataObj->cq_id;
+                $bool+=1;
+            }
+        }
+    }
+
+    //定时生成合同
+    function conCreate()
+    {
+        set_time_limit(0);
+        $bool =0;
+        $id = 1;
+        while($bool<=5) {
+            $where[] = ['cq_id','>',$id];
+            $where[] = ['is_creat','=',0];
+            $where[] = ['is_upload','=',1];
+            $dataObj = ContractQueue::where($where)->find();
+            if(empty($dataObj)){
+                $res['type'] = '0';
+                $res['code'] = '20000';
+                $res['bool'] = $bool;
+                $res['msg'] = '找不到数据';
+                return json($res);
+            }
+            $boolCreate = Cache::get('create'.$dataObj->c_number);    //生成合同
+            if(empty($boolCreate)){
+                Cache::set('create'.$dataObj->c_number,'1');
+                if($dataObj->type==0){//订单合同 即多文件合同
+                    $path = "/catalog/create/";
+                    //post data
+                    $post_data['senderAccount'] = $dataObj->unit_account;
+                    $post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
+                    $post_data['catalogName'] = $dataObj->c_number;
+                    $post_data['description'] = "";
+                    $res_create = $this->basePara($path, $post_data);
+                    $create_arr = json_decode($res_create,true);
+
+                    if($create_arr['errno']==0||$create_arr['errno']==242008){ //生成目录成功
+                        $path = "/catalog/uploadContract/";
+                        //post data
+                        $post_data_add['senderAccount'] = $dataObj->unit_account;
+                        $post_data_add['catalogName'] = $dataObj->c_number;   //合同目录唯一标识
+                        $post_data_add['fid'] = $dataObj->ssq_fid_one;
+                        $post_data_add['title'] = "合同主体";
+                        $file_add_one = $this->basePara($path, $post_data_add);
+                        $post_data_add['fid'] = $dataObj->ssq_fid_two;
+                        $post_data_add['title'] = "合同行程单";
+                        $file_add_two = $this->basePara($path, $post_data_add);
+                        $create_arr_one = json_decode($file_add_one,true);
+                        $create_arr_two = json_decode($file_add_two,true);
+                        if(($create_arr_one['errno']==0||$create_arr_one['errno']==242008)&&($create_arr_two['errno']==0||$create_arr_two['errno']==242008)){ //生成成功
+                            $dataObj->is_creat = 1;
+                            $dataObj->contract_id = $dataObj->c_number;
+                            $dataObj->save();
+                        }
+                    }else{
+                        $id = $dataObj->cq_id;
+                        $bool+=1;
+                    }
+                }else{
+                    //自由合同开始
+                    $path = "/contract/create/";
+                    //post data
+                    $post_data['account'] = $dataObj->unit_account;
+                    $post_data['fid'] = $dataObj->ssq_fid_one;
+                    $post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
+                    $post_data['title'] = "合同主体";
+                    $post_data['description'] = "";
+                    $post_data['hotStoragePeriod'] = "31536000";
+                    $res_create = $this->basePara($path, $post_data);
+                    $create_arr = json_decode($res_create,true);
+                    //自由合同结束
+                    if($create_arr['errno']==0){ //生成成功
+                        $dataObj->is_creat = 1;
+                        $dataObj->contract_id = $create_arr['data']['contractId'];
+                        $dataObj->save();
+                    }else{
+                        $id = $dataObj->cq_id;
+                        $bool+=1;
+                    }
+                }
+                Cache::rm('create'.$dataObj->c_number);
+            }else{
+                $id = $dataObj->cq_id;
+                $bool+=1;
+            }
+        }
+    }
+    //定时自动签署
+    function conSign()
+    {
+        set_time_limit(0);
+        $bool =0;
+        $id = 1;
+        while($bool<=10) {
+            $where[] = ['cq_id','>',$id];
+            $where[] = ['is_creat','=',1];
+            $where[] = ['is_sign','=',0];
+            $dataObj = ContractQueue::where($where)->find();
+            $map['c_number'] = $dataObj->c_number;
+            $dataInfo = ContractMode::where($map)->find();
+            if(empty($dataObj)){
+                $res['type'] = '0';
+                $res['code'] = '20000';
+                $res['bool'] = $bool;
+                $res['msg'] = '找不到数据';
+                return json($res);
+            }
+            $boolSign = Cache::get('sign'.$dataObj->c_number);    //自动签署
+            if(empty($boolSign)){
+                Cache::set('sign'.$dataObj->c_number,'1');
+                $res['type'] = '0';
+                $res['msg'] = '自动盖章失败,请重试';
+                if($dataObj->type==0){//订单合同 即多文件合同
+                    $orderPath = "/catalog/getContracts/";
+                    //post data
+                    $order_post_data['catalogName'] = $dataObj->c_number;   //合同目录唯一标识
+                    $res_list = $this->basePara($orderPath, $order_post_data);
+                    $arrs = json_decode($res_list,true);
+                    $path = "/contract/sign/cert/";
+                    //post data
+
+                    $arr['pageNum'] = '1';
+                    $arr['x'] = '0.4';
+                    $arr['y'] = '0.5';
+                    $arr['rptPageNums'] = '0';
+                    $res_sign_bool = 1;
+                    foreach($arrs['data']['contracts'] as $k=>$v){
+                        $post_data['contractId'] = $v['contractId'];
+                        $post_data['signerAccount'] = $dataObj->unit_account;
+                        $post_data['signatureImageName'] = $post_data['signerAccount'];
+                        $post_data['signaturePositions'] = $arr;
+                        $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
+                        $reso_sign = $this->basePara($path, $jsonStr, '', true);
+                        $arrss[] = json_decode($reso_sign,true);
+                        $res_sign = json_encode($arrss);
+                        if(!($arrss[$k]['errno']==0||$arrss[$k]['errno']==241424)){
+                            $res_sign_bool = $res_sign_bool*0;
+                        }
+                    }
+                    if($res_sign_bool==1){ //盖章成功
+                        $dataObj->is_sign = 1;
+                        $dataObj->save();
+                        //更新合同状态
+                        $dataInfo->is_create = 1;
+                        $dataInfo->tra_status = 1;
+                        $dataInfo->contract_status = 4;
+                        $dataInfo->save();
+                    }else{
+                        $id = $dataObj->cq_id;
+                        $bool+=1;
+                    }
+                }else{
+                    //自由合同开始
+                    $path = "/storage/contract/sign/cert/";
+                    //post data
+                    $arr = array();
+                    $arr['pageNum'] = '1';
+                    $arr['x'] = '0.4';
+                    $arr['y'] = '0.5';
+                    $arr['rptPageNums'] = '0';
+                    $post_data['contractId'] = $dataObj->contract_id;
+                    $post_data['signer'] = $dataObj->unit_account;
+                    $post_data['signatureImageName'] = $post_data['signer'];
+                    $post_data['signaturePositions'] = $arr;
+                    $jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
+                    $res_sign = $this->basePara($path, $jsonStr, '', true);
+                    $sign_arr = json_decode($res_sign,true);
+                    //自由合同结束
+                    if($sign_arr['errno']==0||$sign_arr['errno']==241424){ //盖章成功
+                        $dataObj->is_sign = 1;
+                        $dataObj->save();
+                        //更新合同状态
+                        $dataInfo->is_create = 1;
+                        $dataInfo->tra_status = 1;
+                        $dataInfo->contract_status = 4;
+                        $dataInfo->save();
+                    }else{
+                        $id = $dataObj->cq_id;
+                        $bool+=1;
+                    }
+                }
+                Cache::rm('sign'.$dataObj->c_number);
+            }else{
+                $id = $dataObj->cq_id;
+                $bool+=1;
+            }
+        }
+    }
+    //定时结束合同
+    function conLock()
+    {
+        set_time_limit(0);
+        $bool =0;
+        $id = 1;
+        while($bool<=10) {
+            $where[] = ['cq_id','>',$id];
+            $where[] = ['is_lock','=',0];
+            $where[] = ['is_sign_two','=',1];
+            $dataObj = ContractQueue::where($where)->find();
+            $map['c_number'] = $dataObj->c_number;
+            $dataInfo = ContractMode::where($map)->find();
+            if(empty($dataObj)){
+                $res['type'] = '0';
+                $res['code'] = '20000';
+                $res['bool'] = $bool;
+                $res['msg'] = '找不到数据';
+                return json($res);
+            }
+            $boolLock = Cache::get('lock'.$dataObj->c_number);    //结束合同
+            if(empty($boolLock)){
+                Cache::set('lock'.$dataObj->c_number,'1');
+                $res['type'] = '0';
+                $res['msg'] = '结束合同失败，请重试';
+                if($dataObj->type==0){//订单合同 即多文件合同
+                    $path = "/catalog/lock/";
+                    //post data
+                    $post_data['catalogName'] = $dataObj->contract_id;
+                    $response = $this->basePara($path, $post_data);
+                    $arr = json_decode($response,true);
+                }else{
+                    //自由合同开始
+                    $path = "/storage/contract/lock/";
+
+                    $url_params['contractId'] = $dataObj->contract_id;
+                    $response = $this->basePara($path, $url_params);
+                    $arr = json_decode($response,true);
+                    //自由合同结束
+                }
+                if($arr['errno']==0||$arr['errno']==241423){ //结束成功
+                    $dataObj->is_lock = 1;
+                    $dataObj->save();
+                    //更新合同状态
+                    $dataInfo->is_lock = 1;
+                    $dataInfo->save();
+                }else{
+                    $id = $dataObj->cq_id;
+                    $bool+=1;
+                }
+                Cache::rm('lock'.$dataObj->c_number);
+            }else{
+                $id = $dataObj->cq_id;
+                $bool+=1;
+            }
+        }
+    }
     //
     function cs()
     {
-        Cache::clear();
+        if(empty(input('param.c_number'))){
+            Cache::clear();
+            return '清空全部缓存';
+        }
+        Cache::rm('lock'.input('param.c_number'));
+        Cache::rm('sign'.input('param.c_number'));
+        Cache::rm('create'.input('param.c_number'));
+        Cache::rm('up'.input('param.c_number'));
+        Cache::rm('reg'.input('param.c_number'));
+        return '清空'.input('param.c_number').'缓存';
     }
 }
