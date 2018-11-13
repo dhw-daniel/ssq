@@ -547,7 +547,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{
 		var_dump("Test regUser with credential...");
 
-		$mail = "296274300@qq.com";
+		/*$mail = "296274300@qq.com";
 		$account = "510231196811155237";
 		$mobile = "13668169319";
 		$name = "成都中国旅行社有限公司";
@@ -564,7 +564,26 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		$credential['contactMail'] = '296274300@qq.com';
 		$credential['province']= '';
 		$credential['city'] = '';
-		$credential['address'] = '';
+		$credential['address'] = '';*/
+
+		$mail = "chenying@hkcts.com";
+        $account = "350211196906309010";
+        $mobile = "13982190803";
+        $name = "港中旅国际成都旅行社有限公司";
+        $user_type = "2";
+
+        $credential['regCode'] = '915101047403377763';
+        $credential['orgCode'] = '915101047403377763';
+        $credential['taxCode'] = '915101047403377763';
+        $credential['legalPerson'] = '林寿';
+        $credential['legalPersonIdentity'] = '350211196906309010';
+        $credential['legalPersonIdentityType'] = '0';
+        $credential['legalPersonMobile'] = '13982190803';
+        $credential['contactMobile'] = '13982190803';
+        $credential['contactMail'] = 'chenying@hkcts.com';
+        $credential['province']= '';
+        $credential['city'] = '';
+        $credential['address'] = '';
 
 		$applyCert = '1';
 
@@ -1546,9 +1565,6 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     system($shell, $status);//本地生成合同主体pdf
                     if($status){ //执行失败
                         Cache::rm('up'.$dataObj->c_number);
-                    }else{
-                        Cache::rm('up'.$dataObj->c_number);
-                        return 1;
                     }
                     //上传合同主体文件开始
                     $file_name = $dataObj->c_number.'.pdf';
