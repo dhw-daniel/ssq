@@ -1295,7 +1295,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         if($arrs['errno']==0){
             $res['type'] = '1';
             $res['msg'] = '';
-            $data['pic'] ='http://bshare.optimix.asia/barCode?site=weixin&url='.$arrs['data']['url'];
+            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$arrs['data']['url'];
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
@@ -1341,7 +1341,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         if($arrs['errno']==0){
             $res['type'] = '1';
             $res['msg'] = '';
-            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='.$arrs['data']['url'];
+            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$arrs['data']['url'];
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
@@ -1381,7 +1381,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         if($arrs['errno']==0){
             $res['type'] = '1';
             $res['msg'] = '';
-            $data['pic'] ='http://bshare.optimix.asia/barCode?site=weixin&url='.$arrs['data']['url'];
+            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$arrs['data']['url'];
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
