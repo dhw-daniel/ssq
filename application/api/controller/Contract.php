@@ -648,6 +648,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{
 		$img_base64 = '';
 		$app_img_file = 'zl.jpg';   //绝对路径
+        $app_img_file = 'gzl.jpg';   //绝对路径
 		$img_info = getimagesize($app_img_file);//取得图片的大小，类型等
 		$fp = fopen($app_img_file, "r");     //图片是否可读权限
 		if ($fp) {
@@ -669,6 +670,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	    fclose($fp);		
         $path = "/signatureImage/user/upload/";
         //post data
+        $post_data['account'] = '510231196811155237';
         $post_data['account'] = '510231196811155237';
 		$post_data['imageData'] = $file_content;
 		$post_data['imageName'] = $post_data['account'];
@@ -1329,7 +1331,6 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $str = str_replace('"-"',$temp,$str);
         $str = str_replace('"|"',$temp,$str);
         $jsonStr = $str;  //提前处理为jsonArr格式
-        //var_dump($jsonStr);die;
         $response = $this->basePara($path, $jsonStr, '', true);
         $arrs = json_decode($response,true);
         $res['file_page'] = $pagenum;
@@ -1340,7 +1341,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         if($arrs['errno']==0){
             $res['type'] = '1';
             $res['msg'] = '';
-            $data['pic'] ='http://bshare.optimix.asia/barCode?site=weixin&url='.$arrs['data']['url'];
+            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='.$arrs['data']['url'];
             $data['url'] = $arrs['data']['url'];
             $res['data'] = $data;
         }
