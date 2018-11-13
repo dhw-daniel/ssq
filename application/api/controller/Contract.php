@@ -648,7 +648,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{
 		$img_base64 = '';
 		$app_img_file = 'zl.jpg';   //绝对路径
-        $app_img_file = 'gzl.jpg';   //绝对路径
+        $app_img_file = 'gzl.png';   //绝对路径
 		$img_info = getimagesize($app_img_file);//取得图片的大小，类型等
 		$fp = fopen($app_img_file, "r");     //图片是否可读权限
 		if ($fp) {
@@ -671,7 +671,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $path = "/signatureImage/user/upload/";
         //post data
         $post_data['account'] = '510231196811155237';
-        $post_data['account'] = '510231196811155237';
+        $post_data['account'] = '350211196906309010';//港中旅
 		$post_data['imageData'] = $file_content;
 		$post_data['imageName'] = $post_data['account'];
         
