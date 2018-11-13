@@ -1845,4 +1845,9 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         Cache::rm('reg'.input('param.c_number'));
         return '清空'.input('param.c_number').'缓存';
     }
+    //
+    function conTest()
+    {
+        return 1;
+    }
 }
