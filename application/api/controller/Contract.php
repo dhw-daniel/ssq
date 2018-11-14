@@ -521,85 +521,84 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	//注册个人用户
 	function regUser()
 	{
-
-		$mail = time() . rand(1000, 9999)."@test.com";
-		$identity = '612722199103133571';
-		$account = $identity;
-		$mobile = "18111555206";
-		$name = "test_name1";
-		$user_type = "1";
-		
+		$mail = input('param.mail');
+		$identity = input('param.identity');
+        $account = input('param.account');
+		if(empty($account)){
+            $account = $identity;
+        }
+		$mobile = input('param.mobile');
+		$name = input('param.name');
+		$user_type = '1';   //个人
+        $credential['identityType'] = input('param.identity_type');           //0身份证
 		$credential['identity'] = $identity;
-		$credential['identityType'] = '0';
-		$credential['contactMobile'] = '';
-		$credential['contactMail'] = '506682730@qq.com';
-		$credential['province']= '';
-		$credential['city'] = '';
-		$credential['address'] = '';
+		$credential['contactMobile'] = $mobile;
+		$credential['contactMail'] = $mail;
+		$credential['province']= input('param.province');
+		$credential['city'] = input('param.city');
+		$credential['address'] = input('param.address');
 
 		$applyCert = '1';
 
 		$response = $this->regBaseUser($account, $mail, $mobile, $name, $user_type, $credential, $applyCert);
-		var_dump($response);
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	//注册企业用户
 	function regUserWithCredential()
 	{
-		var_dump("Test regUser with credential...");
-
-		/*$mail = "296274300@qq.com";
-		$account = "510231196811155237";
-		$mobile = "13668169319";
-		$name = "成都中国旅行社有限公司";
-		$user_type = "2";
-
-		$credential['regCode'] = '91510100734794268U';
-		$credential['orgCode'] = '91510100734794268U';
-		$credential['taxCode'] = '91510100734794268U';
-		$credential['legalPerson'] = '彭忠';
-		$credential['legalPersonIdentity'] = '510231196811155237';
-		$credential['legalPersonIdentityType'] = '0';
-		$credential['legalPersonMobile'] = '13668169319';
-		$credential['contactMobile'] = '13668169319';
-		$credential['contactMail'] = '296274300@qq.com';
-		$credential['province']= '';
-		$credential['city'] = '';
-		$credential['address'] = '';*/
-
-		$mail = "chenying@hkcts.com";
-        $account = "350211196906309010";
-        $mobile = "13982190803";
-        $name = "港中旅国际成都旅行社有限公司";
+        $mail = input('param.mail');
+        $identity = input('param.identity');   //法人证件号
+        $identity_type = input('param.identity_type');  //法人证件类型
+        $account = input('param.account');
+        if(empty($account)){
+            $account = $identity;
+        }
+        $mobile = input('param.mobile');
+        $name = input('param.name');      //企业名称
+        $person_name = input('param.person_name');  //法人名称
         $user_type = "2";
-
-        $credential['regCode'] = '915101047403377763';
-        $credential['orgCode'] = '915101047403377763';
-        $credential['taxCode'] = '915101047403377763';
-        $credential['legalPerson'] = '林寿';
-        $credential['legalPersonIdentity'] = '350211196906309010';
-        $credential['legalPersonIdentityType'] = '0';
-        $credential['legalPersonMobile'] = '13982190803';
-        $credential['contactMobile'] = '13982190803';
-        $credential['contactMail'] = 'chenying@hkcts.com';
-        $credential['province']= '';
-        $credential['city'] = '';
-        $credential['address'] = '';
+        $credential['legalPerson'] = $person_name;   //法人名称
+        $credential['legalPersonIdentity'] = $identity;
+        $credential['legalPersonIdentityType'] = $identity_type;
+        $credential['legalPersonMobile'] = $mobile;
+        $credential['regCode'] = input('param.reg_code');
+        $credential['orgCode'] = input('param.org_code');
+        $credential['taxCode'] = input('param.tax_code');
+        $credential['contactMobile'] = $mobile;
+        $credential['contactMail'] = $mail;
+        $credential['province']= input('param.province');
+        $credential['city'] = input('param.city');
+        $credential['address'] = input('param.address');
 
 		$applyCert = '1';
-
 		$response = $this->regBaseUser($account, $mail, $mobile, $name, $user_type, $credential, $applyCert);
-		return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}		
 	//异步查询证书状态
 	function checkTaskStatus()
 	{
         $path = "/user/async/applyCert/status/";
         //post data
-        $post_data['account'] = '510231196811155237';
-		$post_data['taskId'] = '153905567901000001';
-		
+        $post_data['account'] = input('param.account');
+		$post_data['taskId'] = input('param.task_id');
+
 		$response = $this->basePara($path, $post_data);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	
 	//查询证书编号
@@ -607,48 +606,67 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{
         $path = "/user/getCert/";
         //post data
-        $post_data['account'] = '15389804737539@test.com';
+        $post_data['account'] = input('param.account');
         
 		$response = $this->basePara($path, $post_data, 'POST');
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	//查询个人用户证件信息
 	function getPersonalCredential()
 	{
         $path = "/user/getPersonalCredential/";
         //post data
-        $post_data['account'] = '15389804737539@test.com';
-		$post_data['account'] = '612722199103133571';
+		$post_data['account'] = input('param.account');
 		$response = $this->basePara($path, $post_data);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}	
 	//查询企业用户证件信息
 	function getEnterpriseCredential()
 	{
         $path = "/user/getEnterpriseCredential/";
         //post data
-        $post_data['account'] = '15389804737539@test.com';
+        $post_data['account'] = input('param.account');
         
 		$response = $this->basePara($path, $post_data);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	//获取证书详细信息
 	function getCertInfo()
 	{
         $path = "/user/cert/info/";
         //post data
-        $post_data['account'] = '15389804737539@test.com';
-		$post_data['certId'] = 'BJCA-33-20181008143433648-81724';
+        $post_data['account'] = input('param.account');
+		$post_data['certId'] = input('param.cert_id');
         
 		$response = $this->basePara($path, $post_data);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	//上传企业公章
 	function qyUpSignImage()
 	{
 		$img_base64 = '';
-		$app_img_file = 'zl.jpg';   //绝对路径
-        $app_img_file = 'gzl.png';   //绝对路径
+        $app_img_file = 'gzl.png';
+        $app_img_file = input('param.img_path');   //绝对路径
 		$img_info = getimagesize($app_img_file);//取得图片的大小，类型等
 		$fp = fopen($app_img_file, "r");     //图片是否可读权限
 		if ($fp) {
@@ -670,22 +688,25 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	    fclose($fp);		
         $path = "/signatureImage/user/upload/";
         //post data
-        $post_data['account'] = '510231196811155237';
-        $post_data['account'] = '350211196906309010';//港中旅
+        $post_data['account'] = input('param.account');//港中旅
 		$post_data['imageData'] = $file_content;
 		$post_data['imageName'] = $post_data['account'];
         
 		$response = $this->basePara($path, $post_data);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	//下载企业公章
 	function qyDlSignImage()
 	{		
         $path = "/signatureImage/user/download/";
         //post data
-        $post_data['account'] = '510231196811155237';
+        $post_data['account'] = input('param.account');
 		$post_data['imageName'] = $post_data['account'];
-		//$response = $this->downloadSignatureImage($post_data['account'],$post_data['imageName']);  //原测试案例
 		$response = $this->basePara($path, $post_data, "GET");
 		$fp = fopen ( $post_data['account'].'.png', 'w+' );//新建png文件
 		if($fp){
@@ -698,12 +719,11 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	function upFile()
 	{	
 		//$filename = "cc.docx";
-		$filename = "aa.doc";
-		$filepath = "./".$filename;
+		$filename = input('param.file_name');
+		$filepath = input('param.file_path');
 		//$filepath = "http://101.201.70.35/test.pdf";   //远程文件
         $md5file = md5_file($filepath); //得到文件的md5
 		$ftype = substr($filepath,strripos($filepath,".")+1);
-		//var_dump($md5file);var_dump($ftype);die;
 		$fp = fopen($filepath, "r");     //文件是否可读权限
 		if ($fp) {
 			//$file_content = chunk_split(base64_encode(fread($fp, filesize($filepath))));//base64编码
@@ -713,7 +733,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		fclose ( $fp );
 		$path = "/storage/upload/";
         //post data
-        $post_data['account'] = '510231196811155237';
+        $post_data['account'] = input('param.account');
 		$post_data['fdata'] = $file_content;
 		$post_data['fmd5'] = $md5file;
 		$post_data['ftype'] = $ftype;
@@ -721,9 +741,12 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		$post_data['fpages'] = 100;  //此处的页码数只要大于实际页码数就没问题
         
 		$response = $this->basePara($path, $post_data);
-		//fid: 7887457438124855003  account: 510231196811155237  
-		//fid: 1675922615677631156  account: 510231196811155237 
-        return $response;		
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 
 	}
 	//doc ，docx文件并转化为pdf
@@ -731,41 +754,41 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{	
 		$path = "/storage/convert/";
         //post data
-        $post_data['account'] = '510231196811155237';
-		//$post_data['fid'] = "7887457438124855003";
-		$post_data['fid'] = "4832731977038900811";
+		$post_data['fid'] = input('param.fid');
 		$post_data['ftype'] = "PDF";
 		$response = $this->basePara($path, $post_data);
-        return $response;		
-
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	//下载pdf
 	function dolPdf()
-	{	
+	{
+	    $download_path = input('param.download_path');
+        if(empty($download_path)){
+            $download_path = './pdf/';
+        }
 		$path = "/storage/download/";
         //post data
-		$post_data['fid'] = "675819628827218391";
-		$post_data['fid'] = "6663789385475722304";
-		$post_data['fid'] = "8082542010827255142";
-		//$post_data['fid'] = "4832731977038900811";  //doc 文档
+		$post_data['fid'] = input('param.fid');
 		$file_type = ".pdf";
-		//$file_type = ".doc";
 		$response = $this->basePara($path, $post_data, "GET");
-		$fp = fopen ( $post_data['fid'].$file_type, 'w+' );//新建文件
+		$fp = fopen ( $download_path.$post_data['fid'].$file_type, 'w+' );//新建文件
 		if($fp){
 			fwrite ( $fp, $response );  //二进制流写入文件
-			fclose ( $fp );  
+			fclose ( $fp );
+			return 1;
 		}
-        return $response;		
+        return 0;
 
 	}
 	//得到pdf的页码
 	function ss()
 	{
-	    return json_encode($_POST);
-		$filename = "5996267343751410328.pdf";
-		$filepath = "./".$filename;
-		$filepath = "http://101.201.70.35/test.pdf";
+		$filepath = input('param.pdf_path');
 		$response = $this->getPageTotal($filepath);
         return $response;		
 
@@ -775,31 +798,36 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{	
 		$path = "/contract/create/";
         //post data
-        $post_data['account'] = '510231196811155237';
-		$post_data['fid'] = "4761274319626032401";
+        $post_data['account'] = input('param.account');
+		$post_data['fid'] = input('param.fid');
 		$post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
-		$post_data['title'] = "测试合同";
+		$post_data['title'] = input('param.title');
 		$post_data['description'] = "";
 		$post_data['hotStoragePeriod'] = "31536000";
 		$response = $this->basePara($path, $post_data);
-		// contractId  153922895201000001   153923893801000001
-        return $response;	
-
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 	}
 	//得到单文件合同预览网址
 	function getContractView()
 	{	
 		$path = "/contract/getPreviewURL/";
         //post data
-        $post_data['contractId'] = '153924058501000001';
-		$post_data['account'] = '510231196811155237';
+        $post_data['contractId'] = input('param.contract_id');
+		$post_data['account'] = input('param.account');
 		$post_data['dpi'] = '160';
 		$post_data['expireTime'] = '0';  //1个月后的时间戳
 		$response = $this->basePara($path, $post_data);
-		// url  153922895201000001
-        //return $response;	
-		$arr = json_decode($response,true);
-		var_dump($arr);
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 
 	}
 	//自动签署单文件合同(旅行社)
@@ -807,25 +835,27 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{	
 		$path = "/storage/contract/sign/cert/";
         //post data
-		$fid = "4761274319626032401";  //合同对应的合同文件
-		$filepath = './'.$fid.'.pdf';
+		$fid = input('param.fid');  //合同对应的合同文件
+		$filepath = './pdf/'.$fid.'.pdf';
 		$pagenum = $this->getPageTotal($filepath);
 		$arr = array();
 	    $arr['pageNum'] = '1';
         $arr['x'] = '0.15';
         $arr['y'] = '0.15';
 		$arr['rptPageNums'] = '0';
-        $post_data['contractId'] = '153924058501000001';
-		$post_data['signer'] = '510231196811155237';
+        $post_data['contractId'] = input('param.contract_id');
+		$post_data['signer'] = input('param.account');
 		$post_data['signatureImageName'] = $post_data['signer'];
 		$post_data['signaturePositions'] = $arr; 
 		$jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
-		//var_dump($jsonStr);die;
+
 		$response = $this->basePara($path, $jsonStr, '', true);
-		// url  153922895201000001
-        //return $response;	
-		$arrs = json_decode($response,true);
-		var_dump($arrs);
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 
 	}
 
@@ -834,36 +864,54 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     {
         $path = "/contract/getSignerStatus/";
 
-        $url_params['contractId'] = '153924058501000001';
+        $url_params['contractId'] = input('param.contract_id');
 		$response = $this->basePara($path, $url_params);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
     }
 	//撤销单文件合同
     function cancelContract()
     {
         $path = "/contract/cancel/";
 
-        $url_params['contractId'] = '153924058501000001';
+        $url_params['contractId'] = input('param.contract_id');
 		$response = $this->basePara($path, $url_params);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
     }
 	//锁定并结束单文件合同
     function lockContract()
     {
         $path = "/storage/contract/lock/";
 
-        $url_params['contractId'] = '154164502101000001';
+        $url_params['contractId'] = input('param.contract_id');
 		$response = $this->basePara($path, $url_params);
-        return $response;
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
     }	
 	//下载单文件合同
     function downloadContract()
     {
         $path = "/storage/contract/download/";
-
-        $url_params['contractId'] = '153924058501000001';
+        $pdf_path = './pdf/';
+        if(!empty(input('param.pdf_path'))){
+            $pdf_path = input('param.pdf_path');
+        }
+        $url_params['contractId'] = input('param.contract_id');
 		$response = $this->basePara($path, $url_params, 'GET');
-		file_put_contents("ceshi.pdf",$response);
+		file_put_contents($pdf_path.$url_params['contractId'].".pdf",$response);
         return $response;
     }
 	//创建合同目录
@@ -871,40 +919,55 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
     {
 		$path = "/catalog/create/";
         //post data
-        $post_data['senderAccount'] = '510231196811155237';
+        $post_data['senderAccount'] = input('param.account');
 		$post_data['expireTime'] = $this->getMonthTimes(1).'';  //1个月后的时间戳
-		$post_data['catalogName'] = "测试多文件合同目录";
+		$post_data['catalogName'] = input('param.contract_id');
 		$post_data['description'] = "";
 		$response = $this->basePara($path, $post_data);
-        return $response;	
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
     }
 	//合同目录添加合同文件
     function addContract()
     {
 		$path = "/catalog/uploadContract/";
         //post data
-        $post_data['senderAccount'] = '510231196811155237';
-		$post_data['catalogName'] = "测试多文件合同目录";   //合同目录唯一标识
-		$post_data['fid'] = "8082542010827255142";       //6663789385475722304   8082542010827255142
-		$post_data['title'] = "测试3333";
+        $post_data['senderAccount'] = input('param.account');
+		$post_data['catalogName'] = input('param.contract_id');   //合同目录唯一标识
+		$post_data['fid'] = input('param.fid');       //6663789385475722304   8082542010827255142
+		$post_data['title'] = input('param.title');
 		$response = $this->basePara($path, $post_data);
-        return $response;	
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
     }
 	//得到合同目录的合同列表
     function getContracts()
     {
 		$path = "/catalog/getContracts/";
         //post data
-		$post_data['catalogName'] = "测试多文件合同目录";   //合同目录唯一标识
+		$post_data['catalogName'] = input('param.contract_id');   //合同目录唯一标识
 		$response = $this->basePara($path, $post_data);
-        return $response;	
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
     }
 	//自动签署多文件合同(旅行社)
 	function signCatalog()
 	{	
 		$orderPath = "/catalog/getContracts/";
         //post data
-		$order_post_data['catalogName'] = "测试多文件合同目录";   //合同目录唯一标识
+		$order_post_data['catalogName'] = input('param.contract_id');   //合同目录唯一标识
 		$res = $this->basePara($orderPath, $order_post_data);
 		$arrs = json_decode($res,true);
 		$path = "/contract/sign/cert/";
@@ -916,14 +979,19 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 		$arr['rptPageNums'] = '0';
 		foreach($arrs['data']['contracts'] as $k=>$v){
 			$post_data['contractId'] = $v['contractId'];
-			$post_data['signerAccount'] = '510231196811155237';
+			$post_data['signerAccount'] = input('param.account');
 			$post_data['signatureImageName'] = $post_data['signerAccount'];
 			$post_data['signaturePositions'] = $arr; 
 			$jsonStr = $this->getJsonArr($post_data,'signaturePositions');  //提前处理为jsonArr格式
 			$response = $this->basePara($path, $jsonStr, '', true);
-			$arrss[] = json_decode($response,true);			
+            $arrs = json_decode($response,true);
+            $res['response'] = $arrs;
+            $res['data'] = '';
+            $res['msg'] = $arrs['errmsg'];
+            $res['type'] = $arrs['errno'];
+			$arrss[] = $res;
 		}
-		var_dump($arrss);
+        return json($arrss);
 	}
 
 	//得到多文件合同预览网址
@@ -931,15 +999,17 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{	
 		$path = "/catalog/getPreviewURL/";
         //post data
-        $post_data['catalogName'] = '测试多文件合同目录';
-		$post_data['signerAccount'] = '510231196811155237';
+        $post_data['catalogName'] = input('param.contract_id');
+		$post_data['signerAccount'] = input('param.account');
 		$post_data['dpi'] = '160';
 		$post_data['expireTime'] = '0';  //1个月后的时间戳
 		$response = $this->basePara($path, $post_data);
-		// url  153922895201000001
-        //return $response;	
-		$arr = json_decode($response,true);
-		var_dump($arr);
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 
 	}
 	//结束多文件合同
@@ -947,12 +1017,14 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 	{	
 		$path = "/catalog/lock/";
         //post data
-        $post_data['catalogName'] = '测试多文件合同目录';
+        $post_data['catalogName'] = input('param.contract_id');
 		$response = $this->basePara($path, $post_data);
-		// url  153922895201000001
-        //return $response;	
-		$arr = json_decode($response,true);
-		var_dump($arr);
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
 
 	}
     //上传doc ，docx, pdf并转为pdf
