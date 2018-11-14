@@ -13,20 +13,14 @@ use think\facade\Cache;
 use app\api\model\ContractQueue;
 use app\api\model\Contract as ContractMode;
 class Contract extends Controller{
-    /*
+
     //测试环境
     private $_developerId = '2091829019505852963';
     private $_pem = '-----BEGIN RSA PRIVATE KEY-----
 MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf5bascN2yWOb3gj/InnOstLFNMZ/pCNou5OUUSG/L7n84JpUZm2CwFfiRgoO2hkpVsgF+SLSZ85swYwREQ/voobFXet2q1ZHsjZrVw+ec2uaeVxIDRXRmGZRONOUnpnouOgBWOMs0NNvlAgMBAAECgYBj6ceajOF6AvYS3BjpzIFmq8ac71xGA/othRKqXVPlkGlBZD4JCwvEE2uk58h3koGPAbSz1pYHZwq00jOstuUfdtGycRUQ/Xcuocl0t9OIlTpdp2YU3hWr9JU215JRwlwINS27vpHECIux6RbCU2LyFpAoaVT/4iPiXBZZCzRxwQJBAMQiAE7e6LyiR+E2WdEdYgj98zF4uhhwj8LIjFmdIGZ1K01D13Qn6cmCoErnw5Ca48nXyfD/Z/UEu2BQI9yzD5ECQQDB4LTR42eBrjcgFonolV2i4sJOOIqv6wO0/VO+9W6TWsSx6XQAOcOZbedCfKt/DALuJY9xOkzyAcwJbzTU6sUVAkEAw4pOmlOc3+w/E6b3VwgfZG2jV7BQgOtAOOdvHi0MT3oDqO25UaI1cGUeYG++x13VOrg8KlzJDTwhf/2GM5QGMQJAfQO7NPfwn1NKInvGE151EXoslqmo7ASb0FHldWXnFkdaO+pwLVESClYu39Vp9DM3lH5Nv1I7mXWFLrQxmfWEfQJAZZW4RV+kBWUbiDi9u2F4d8FJE4bedjUWnFbeZTUSuE6FMloDUEJqYoDG6ARo+AwVXhiNDQgFlExpRvB8Sz+wqQ==
 -----END RSA PRIVATE KEY-----';
 	private $_host = 'https://openapi.bestsign.info/openapi/v2';        //云签请求域名
-    */
-    //正式环境
-    private $_developerId = '1542003930018541764';
-    private $_pem = '-----BEGIN RSA PRIVATE KEY-----
-MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMCT1SZNK65EwgNacNeOG6zNYCi6KkM5eecerEfNpymWHw9Qnjn15nUhrYiC6rMiiLJQ29zYkJkQXt/5YtDT38WXKDGoxYDGqYcdu0vpZYDgnkrcdEQYKXMSosLPhC+PrVZeSDS27SfRhwf+WRiklWzIUW82fKnqc+s7EHcBQbYvAgMBAAECgYAiNaC1rxvFV12HrvdAs3PjHJCqa3e6fWlUTzSXhMbfMlXOKKoS7cXEpPjouSjsLYRO+OI1txrotenEq86L/jdP2T6lMB7bG68PXYjyItiLiAEW0w84NoF9rlMl/aEpxvmcWA1R728Nokb3zKQTkp+ajRWGcZ5LBf6SsKXtBaN6sQJBAPH7Ym0s8wZo1DdnWRbOG1FKv6FDHksEq4OyqjxNjyGZr+d7NVw1EyrWHu//h2NYmkVpunPGXwIwGdXtcWhmWW0CQQDLu8ZVDwFb7wHfVBZzL8ZNCWvqRSyJP0Am6PbqC8KvtNje/mLGDKDTcrkKN/aFuwPto8T2rb8i/D/i/YPp2siLAkEA6fwFecIsIPd+tTAW4klb+uhHkly/TxTt8EPz/qmUjI36nN/zgfzEUviHI9S3iqXjTtlkdIzN0+TFJqoZrjTBpQJBALMbRjYa9ffre7rpQr9K/ctWABA5dfjGqVBLuF5zrlkn5QzNmOpBydV6YuBv6IMSsVZmhk7S2lkYZ9XXR/P8ChcCQAr4SDb59oEmEJqVGpGyEVpz+cCbxc7519geN+RIltWa8TJUdDHfn0vOGMxhw7jtO/4tkXIsznHI3LZ79NW3GKM=
------END RSA PRIVATE KEY-----';
-    private $_host = 'https://openapi.bestsign.cn/openapi/v2';
+
     private $_contract_host = 'http://test.zl.mankkk.cn';                //合同展示域名
     private $_contract_path = '/Distributor/Contracts/show/cnumber/';   //合同展示路径
     private $_contract_pdf_path = 'http://ssq.mankkk.cn/pdf/';   //合同展示路径
