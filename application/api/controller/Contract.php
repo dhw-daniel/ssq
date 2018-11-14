@@ -1258,7 +1258,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
                     $arr['pageNum'] = '1';
                     $arr['x'] = '0.15';
-                    $arr['y'] = '0.15';
+                    $arr['y'] = '0.12';
                     $arr['rptPageNums'] = '0';
                     $res_sign_bool = 1;
                     foreach($arrs['data']['contracts'] as $k=>$v){
@@ -1292,7 +1292,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     $arr = array();
                     $arr['pageNum'] = '1';
                     $arr['x'] = '0.15';
-                    $arr['y'] = '0.15';
+                    $arr['y'] = '0.12';
                     $arr['rptPageNums'] = '0';
                     $post_data['contractId'] = $dataObj->contract_id;
                     $post_data['signer'] = $dataObj->unit_account;
@@ -1346,7 +1346,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $arr['pageNum'] = '1';
         }
         $arr['x'] = '0.85';
-        $arr['y'] = '0.15';
+        $arr['y'] = '0.12';
         $post_data['contractId'] = $dataObj->contract_id;
         $post_data['signer'] = $dataObj->user_account;
         $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.$dataObj->c_number;
@@ -1390,7 +1390,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         }
 		$arr['pageNum'] = '1';
         $arr['x'] = '0.85';
-        $arr['y'] = '0.15';
+        $arr['y'] = '0.12';
         $post_data['catalogName'] = $dataObj->contract_id;
         $post_data['signerAccount'] = $dataObj->user_account;
         $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.$dataObj->c_number;
@@ -1798,7 +1798,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
 
                     $arr['pageNum'] = '1';
                     $arr['x'] = '0.15';
-                    $arr['y'] = '0.15';
+                    $arr['y'] = '0.12';
                     $arr['rptPageNums'] = '0';
                     $res_sign_bool = 1;
                     foreach($arrs['data']['contracts'] as $k=>$v){
@@ -1833,7 +1833,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     $arr = array();
                     $arr['pageNum'] = '1';
                     $arr['x'] = '0.15';
-                    $arr['y'] = '0.15';
+                    $arr['y'] = '0.12';
                     $arr['rptPageNums'] = '0';
                     $post_data['contractId'] = $dataObj->contract_id;
                     $post_data['signer'] = $dataObj->unit_account;
