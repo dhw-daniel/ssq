@@ -1468,7 +1468,54 @@ MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMCT1SZNK65EwgNacNeOG6zNYCi6KkM5
         }
         return json($res);
     }
+    //更改用户
+    function editUsers()
+    {
+        if(empty(input('param.c_number'))||empty(input('param.mail'))||empty(input('param.identity'))||empty(input('param.mobile'))||empty(input('param.name'))){
+            $res['type'] = '0';
+            $res['code'] = '90000';
+            $res['data'] = '';
+            $res['msg'] = '缺少必要的参数';
+            return json($res);
+        }
+        $where['c_number'] = input('param.c_number');
+        $dataObj = ContractQueue::where($where)->find();
+        $dataInfo = ContractMode::where($where)->find();
+        if(empty(input('param.account_type'))){
+            $account_type = '0';
+        }else{
+            $account_type = input('param.account_type');
+        }
+        if(empty($dataObj)){
+            $res['type'] = '0';
+            $res['code'] = '10002';
+            $res['data'] = '';
+            $res['msg'] = '找不到合同数据';
+            return json($res);
+        }
+        $dataObj->user_info->mail = input('param.mail');
+        $dataObj->user_info->identity = input('param.identity');
+        $dataObj->user_info->mobile = input('param.mobile');
+        $dataObj->user_info->name = input('param.name');
+        $dataObj->account_type = $account_type;
+        $dataObj->user_account = $dataObj->user_info->identity;
+        $res_q = $dataObj->save();
 
+        $dataInfo->info->loops1 = $dataObj->user_info->name;
+        $dataInfo->info->loops4 = $dataObj->user_info->identity;
+        $dataInfo->info->loops5 = $dataObj->user_info->mobile;
+        $dataInfo->info->loops3 = $dataObj->user_info->mail;
+        $dataInfo->account_type = $dataObj->account_type;
+        $res_c = $dataInfo->save();
+        $res['res_c'] = $res_c;
+        $res['res_q'] = $res_q;
+        if($res_q&&$res_c){
+            $res['msg'] = '更新成功';
+        }else{
+            $res['msg'] = '更新失败，请重试';
+        }
+        return json($res);
+    }
     //得到当前合同状态
     function getStatus()
     {
