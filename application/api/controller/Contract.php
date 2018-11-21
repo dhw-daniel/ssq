@@ -15,11 +15,9 @@ use app\api\model\Contract as ContractMode;
 class Contract extends Controller{
 
     //测试环境
-    private $_developerId = '2091829019505852963';
-    private $_pem = '-----BEGIN RSA PRIVATE KEY-----
-MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf5bascN2yWOb3gj/InnOstLFNMZ/pCNou5OUUSG/L7n84JpUZm2CwFfiRgoO2hkpVsgF+SLSZ85swYwREQ/voobFXet2q1ZHsjZrVw+ec2uaeVxIDRXRmGZRONOUnpnouOgBWOMs0NNvlAgMBAAECgYBj6ceajOF6AvYS3BjpzIFmq8ac71xGA/othRKqXVPlkGlBZD4JCwvEE2uk58h3koGPAbSz1pYHZwq00jOstuUfdtGycRUQ/Xcuocl0t9OIlTpdp2YU3hWr9JU215JRwlwINS27vpHECIux6RbCU2LyFpAoaVT/4iPiXBZZCzRxwQJBAMQiAE7e6LyiR+E2WdEdYgj98zF4uhhwj8LIjFmdIGZ1K01D13Qn6cmCoErnw5Ca48nXyfD/Z/UEu2BQI9yzD5ECQQDB4LTR42eBrjcgFonolV2i4sJOOIqv6wO0/VO+9W6TWsSx6XQAOcOZbedCfKt/DALuJY9xOkzyAcwJbzTU6sUVAkEAw4pOmlOc3+w/E6b3VwgfZG2jV7BQgOtAOOdvHi0MT3oDqO25UaI1cGUeYG++x13VOrg8KlzJDTwhf/2GM5QGMQJAfQO7NPfwn1NKInvGE151EXoslqmo7ASb0FHldWXnFkdaO+pwLVESClYu39Vp9DM3lH5Nv1I7mXWFLrQxmfWEfQJAZZW4RV+kBWUbiDi9u2F4d8FJE4bedjUWnFbeZTUSuE6FMloDUEJqYoDG6ARo+AwVXhiNDQgFlExpRvB8Sz+wqQ==
------END RSA PRIVATE KEY-----';
-	private $_host = 'https://openapi.bestsign.info/openapi/v2';        //云签请求域名
+    private $_developerId = 'xxx';
+    private $_pem = 'xxx';
+	private $_host = 'xxx';        //上上签请求域名
 
     private $_contract_host = 'http://test.zl.mankkk.cn';                //合同展示域名
     private $_contract_path = '/Distributor/Contracts/show/cnumber/';   //合同展示路径
@@ -518,9 +516,47 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $output = curl_exec($ch);
         return $output;
     }
+    /**
+     * 转化短连接
+     * long_url 长连接
+     * time 到期时间戳
+     */
+    public function shortUrl($long_url, $times='0')
+    {
+        $path = "/notice/shorturl/create/";
+        //post data
+        $post_data['longUrl'] = $long_url;
+        if($times!='0'){
+            $post_data['expireTime'] = $times.'';
+        }else{
+            $post_data['expireTime'] = strtotime("+6 day").'';
+        }
+        $response = $this->basePara($path, $post_data);
+        return $response;
+    }
 	//****************************************************************************************************
 	// demo functions
 	//****************************************************************************************************
+    //得到短连接
+    function getShortUrl()
+    {
+        $path = "/notice/shorturl/create/";
+        //post data
+        $post_data['longUrl'] = input('param.long_url');
+        if(!empty(input('param.times'))){
+            $post_data['expireTime'] = input('param.times').'';
+        }else{
+            $post_data['expireTime'] = strtotime("+6 day").'';
+        }
+        //var_dump($post_data);die;
+        $response = $this->basePara($path, $post_data);
+        $arrs = json_decode($response,true);
+        $res['response'] = $arrs;
+        $res['data'] = '';
+        $res['msg'] = $arrs['errmsg'];
+        $res['type'] = $arrs['errno'];
+        return json($res);
+    }
 	//注册个人用户
 	function regUser()
 	{
@@ -1348,12 +1384,12 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $arr['rptPageNums'] = '0';
             $arr['pageNum'] = '1';
         }
-        $arr['x'] = '0.85';
+        $arr['x'] = '0.65';
         $arr['y'] = '0.12';
         $post_data['contractId'] = $dataObj->contract_id;
         $post_data['signer'] = $dataObj->user_account;
         $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.$dataObj->c_number;
-        $post_data['dpi'] = '120';
+        $post_data['dpi'] = '240';
         $post_data['isAllowChangeSignaturePosition'] = '1';
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
         $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
@@ -1368,11 +1404,16 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $res['res'] = $response;
         $res['msg'] = '请求失败，请重试';
         if($arrs['errno']==0){
-            $res['type'] = '1';
-            $res['msg'] = '';
-            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$arrs['data']['url'];
-            $data['url'] = $arrs['data']['url'];
-            $res['data'] = $data;
+            $url_res = $this->shortUrl($arrs['data']['url']);
+            $url_arrs = json_decode($url_res,true);
+            if($url_arrs['errno']==0){
+                $res['type'] = '1';
+                $res['msg'] = '';
+                $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$url_arrs['data']['shortUrl'];
+                $data['url'] = $url_arrs['data']['shortUrl'];
+                $res['data'] = $data;
+            }
+            $res['url_res'] = $url_arrs;
         }
         return json($res);
 
@@ -1392,10 +1433,11 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             $arr['pageNum'] = '1';
         }
 		$arr['pageNum'] = '1';
-        $arr['x'] = '0.85';
+        $arr['x'] = '0.65';
         $arr['y'] = '0.12';
         $post_data['catalogName'] = $dataObj->contract_id;
         $post_data['signerAccount'] = $dataObj->user_account;
+        $post_data['dpi'] = '240';
         $post_data['returnUrl'] = $this->_contract_reshow_host.'.html?c_number='.$dataObj->c_number;
         $post_data['vcodeMobile'] = '';      		 //手写签名收验证码手机号，可不填即不收取验证码
         $post_data['isDrawSignatureImage'] = '1';    //1点击签名图片能触发手写面板 2强制必须手绘签名
@@ -1414,11 +1456,16 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $res['res'] = $response;
         $res['msg'] = '请求失败，请重试';
         if($arrs['errno']==0){
-            $res['type'] = '1';
-            $res['msg'] = '';
-            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$arrs['data']['url'];
-            $data['url'] = $arrs['data']['url'];
-            $res['data'] = $data;
+            $url_res = $this->shortUrl($arrs['data']['url']);
+            $url_arrs = json_decode($url_res,true);
+            if($url_arrs['errno']==0){
+                $res['type'] = '1';
+                $res['msg'] = '';
+                $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$url_arrs['data']['shortUrl'];
+                $data['url'] = $url_arrs['data']['shortUrl'];
+                $res['data'] = $data;
+            }
+            $res['url_res'] = $url_arrs;
         }
         return json($res);
     }
@@ -1437,7 +1484,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             //post data
             $post_data['catalogName'] = $dataObj->contract_id;
             $post_data['signerAccount'] = $dataObj->unit_account;
-            $post_data['dpi'] = '160';
+            $post_data['dpi'] = '240';
             $post_data['expireTime'] = '0';  //1个月后的时间戳
             $response = $this->basePara($path, $post_data);
         }else{
@@ -1445,7 +1492,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
             //post data
             $post_data['contractId'] = $dataObj->contract_id;
             $post_data['account'] = $dataObj->unit_account;
-            $post_data['dpi'] = '160';
+            $post_data['dpi'] = '240';
             $post_data['expireTime'] = '0';  //1个月后的时间戳
             $response = $this->basePara($path, $post_data);
         }
@@ -1454,11 +1501,16 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $res['res'] = $response;
         $res['msg'] = '请求失败，请重试';
         if($arrs['errno']==0){
-            $res['type'] = '1';
-            $res['msg'] = '';
-            $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$arrs['data']['url'];
-            $data['url'] = $arrs['data']['url'];
-            $res['data'] = $data;
+            $url_res = $this->shortUrl($arrs['data']['url']);
+            $url_arrs = json_decode($url_res,true);
+            if($url_arrs['errno']==0){
+                $res['type'] = '1';
+                $res['msg'] = '';
+                $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$url_arrs['data']['shortUrl'];
+                $data['url'] = $url_arrs['data']['shortUrl'];
+                $res['data'] = $data;
+            }
+            $res['url_res'] = $url_arrs;
         }
         return json($res);
     }
@@ -1492,6 +1544,7 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
         $dataObj->user_info->mobile = input('param.mobile');
         $dataObj->user_info->name = input('param.name');
         $dataObj->account_type = $account_type;
+        $dataObj->is_deal = 0;
         $dataObj->user_account = $dataObj->user_info->identity;
         $res_q = $dataObj->save();
 
@@ -1646,9 +1699,12 @@ MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJSJyoRxQ6pJsbewfHLCURlVB/RH5oaf
                     $res['type'] = '1';
                     $res['msg'] ='注册用户成功';
                     $dataObj->is_reg_user = 1;
+                    $dataObj->is_deal = 1;
                     $dataObj->user_account = $identity;
                     $dataObj->save();
                 }else{
+                    $dataObj->is_deal = 1;
+                    $dataObj->save();
                     $id = $dataObj->cq_id;
                     $bool+=1;
                 }
