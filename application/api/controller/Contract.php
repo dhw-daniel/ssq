@@ -1281,7 +1281,7 @@ class Contract extends Controller{
             }
         }
 
-        if($dataObj->is_creat==1) {//自动签署
+        if($dataObj->is_creat==1 && $dataObj->is_sign==0) {//自动签署
             if(empty($boolSign)){
                 Cache::set('sign'.$dataObj->c_number,'1');
                 $res['type'] = '0';
@@ -1360,6 +1360,83 @@ class Contract extends Controller{
                 return json($res);
             }
         }
+        if($dataObj->is_sign==1 && ($dataInfo->contract_status==4 || $dataObj->is_sign_two==0)) {//更新游客签署状态
+            if($dataInfo->contract_status==4 && $dataObj->is_sign_two==1){
+                //更新合同状态
+                $dataInfo->user_status = 1;
+                $dataInfo->contract_status = 5;
+                $dataInfo->save();
+                $res['type'] = '1';
+                $res['msg'] = '更新成功';
+                return json($res);
+            }
+            //队列状态未改变
+            if($dataObj->type==0) {//订单合同 即多文件合同
+                $orderPath = "/catalog/getContracts/";
+                //post data
+                $order_post_data['catalogName'] = $dataObj->c_number;   //合同目录唯一标识
+                $res_list = $this->basePara($orderPath, $order_post_data);
+                $arrs = json_decode($res_list,true);
+                $path = "/contract/getSignerStatus/";
+                //post data
+                $res_sign_bool = 0;
+                foreach($arrs['data']['contracts'] as $k=>$v){
+                    $post_data['contractId'] = $v['contractId'];
+                    $res_create = $this->basePara($path, $post_data);
+                    $create_arr = json_decode($res_create,true);
+                    $das[] = $create_arr['data'];
+                    $rss[] = $create_arr;
+                    if($create_arr['errno']==0){
+                        if($create_arr['data'][$dataObj->user_account]=='2'){
+                            $res_sign_bool = 1;
+                        }
+                    }
+                }
+                $res['data'] = $das;
+                $res['res'] = $rss;
+                if($res_sign_bool==1){ //更新成功
+                    $dataObj->is_sign_two = 1;
+                    $dataObj->save();
+                    //更新合同状态
+                    $dataInfo->user_status = 1;
+                    $dataInfo->contract_status = 5;
+                    $dataInfo->save();
+                    $res['type'] = '1';
+                    $res['msg'] = '更新成功';
+                }else{
+                    $res['type'] = '0';
+                    $res['code'] = '10007';
+                    $res['msg'] = '更新失败，请重试';
+                }
+                return json($res);
+            }else{//自由合同
+                $path = "/contract/getSignerStatus/";
+                //post data
+                $post_data['contractId'] = $dataObj->contract_id;
+                $res_create = $this->basePara($path, $post_data);
+                $create_arr = json_decode($res_create,true);
+                //自由合同结束
+                $res['res'] = $create_arr;
+                $res['data'] = $create_arr['data'];
+                if($create_arr['errno']==0){ //请求成功
+                    if($create_arr['data'][$dataObj->user_account]=='2'){
+                        $dataObj->is_sign_two = 1;
+                        $dataObj->save();
+                        //更新合同状态
+                        $dataInfo->user_status = 1;
+                        $dataInfo->contract_status = 5;
+                        $dataInfo->save();
+                        $res['type'] = '1';
+                        $res['msg'] = '更新成功';
+                    }else{
+                        $res['type'] = '0';
+                        $res['code'] = '10007';
+                        $res['msg'] = '更新失败，请重试';
+                    }
+                    return json($res);
+                }
+            }
+        }
         $res['type'] = '0';
         $res['code'] = '10000';
         $res['data'] = '';
@@ -1410,6 +1487,7 @@ class Contract extends Controller{
                 $res['type'] = '1';
                 $res['msg'] = '';
                 $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$url_arrs['data']['shortUrl'];
+                $data['pic'] ='http://qr.liantu.com/api.php?w=180&text='.$url_arrs['data']['shortUrl'];
                 $data['url'] = $url_arrs['data']['shortUrl'];
                 $res['data'] = $data;
             }
@@ -1462,6 +1540,7 @@ class Contract extends Controller{
                 $res['type'] = '1';
                 $res['msg'] = '';
                 $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$url_arrs['data']['shortUrl'];
+                $data['pic'] ='http://qr.liantu.com/api.php?w=180&text='.$url_arrs['data']['shortUrl'];
                 $data['url'] = $url_arrs['data']['shortUrl'];
                 $res['data'] = $data;
             }
@@ -1507,6 +1586,7 @@ class Contract extends Controller{
                 $res['type'] = '1';
                 $res['msg'] = '';
                 $data['pic'] ='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.$url_arrs['data']['shortUrl'];
+                $data['pic'] ='http://qr.liantu.com/api.php?w=180&text='.$url_arrs['data']['shortUrl'];
                 $data['url'] = $url_arrs['data']['shortUrl'];
                 $res['data'] = $data;
             }
@@ -1642,7 +1722,7 @@ class Contract extends Controller{
             //post data
             $post_data['catalogName'] = $dataObj->contract_id;
             $post_data['signerAccount'] = $dataObj->unit_account;
-            $post_data['dpi'] = '160';
+            $post_data['dpi'] = '240';
             $post_data['expireTime'] = '0';  //1个月后的时间戳
             $response = $this->basePara($path, $post_data);
         }else{
@@ -1650,7 +1730,7 @@ class Contract extends Controller{
             //post data
             $post_data['contractId'] = $dataObj->contract_id;
             $post_data['account'] = $dataObj->unit_account;
-            $post_data['dpi'] = '160';
+            $post_data['dpi'] = '240';
             $post_data['expireTime'] = '0';  //1个月后的时间戳
             $response = $this->basePara($path, $post_data);
         }
