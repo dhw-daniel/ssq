@@ -1619,6 +1619,13 @@ class Contract extends Controller{
             $res['msg'] = '找不到合同数据';
             return json($res);
         }
+        if($dataObj->is_reg_user==1){
+            $res['type'] = '0';
+            $res['code'] = '10002';
+            $res['data'] = '';
+            $res['msg'] = '当前状态不能修改用户信息，请重做合同';
+            return json($res);
+        }
         $dataObj->user_info->mail = input('param.mail');
         $dataObj->user_info->identity = input('param.identity');
         $dataObj->user_info->mobile = input('param.mobile');
